@@ -1,49 +1,24 @@
-name: Update VBS File
+name: Update VBS
 
 on:
   schedule:
-    # Runs every 10 minutes
     - cron: '*/10 * * * *'
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Generate VBS with current link
+    - uses: actions/checkout@v4  # Updated to v4
+    - name: Update VBS
       run: |
-        # Define your links
         links=("https://link1.com/dodu" "https://link2.com/dodu" "https://link3.com/dodu")
-        
-        # Get current link based on 10-minute interval
         current_minute=$(date +%M)
         link_index=$((current_minute / 10 % 3))
         current_link=${links[$link_index]}
-        
-        # Replace placeholder in template
         sed "s/%%CURRENT_LINK%%/$current_link/" installer.vbs.template > installer.vbs
-        
-        # Create index.html for GitHub Pages
-        echo "<!DOCTYPE html>
-        <html>
-        <head>
-          <title>Redirect to Download</title>
-          <meta http-equiv=\"refresh\" content=\"0; url=installer.vbs\">
-        </head>
-        <body>
-          <p>If you are not redirected, <a href=\"installer.vbs\">click here to download</a>.</p>
-        </body>
-        </html>" > index.html
-        
-        echo "Updated with link: $current_link"
-        
-    - name: Commit and push changes
-      run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add installer.vbs index.html
-        git commit -m "Update VBS with current link" || exit 0
+        git add installer.vbs
+        git commit -m "Update VBS" || exit 0
         git push
