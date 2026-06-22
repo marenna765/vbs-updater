@@ -2,7 +2,7 @@ name: Update VBS
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/50 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 10 % 5))
+        link_index=$((current_minute / 50 % 5))
         current_link=${links[$link_index]}
         
         echo "Creating VBS with link: $current_link"
