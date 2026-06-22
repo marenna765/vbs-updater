@@ -9,16 +9,25 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4  # Updated to v4
     - name: Update VBS
       run: |
+        # Clone the repository
+        git clone https://github.com/${{ github.repository }}.git .
+        
+        # Define your links (REPLACE WITH YOUR ACTUAL LINKS)
         links=("https://link1.com/dodu" "https://link2.com/dodu" "https://link3.com/dodu")
+        
+        # Get current link based on 10-minute interval
         current_minute=$(date +%M)
         link_index=$((current_minute / 10 % 3))
         current_link=${links[$link_index]}
+        
+        # Replace placeholder in template
         sed "s/%%CURRENT_LINK%%/$current_link/" installer.vbs.template > installer.vbs
+        
+        # Set up git and push changes
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add installer.vbs
-        git commit -m "Update VBS" || exit 0
+        git commit -m "Update VBS with link: $current_link" || exit 0
         git push
