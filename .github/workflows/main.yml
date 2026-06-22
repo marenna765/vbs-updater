@@ -21,9 +21,7 @@ jobs:
         
         # Create the VBS file
         cat > installer.vbs << 'EOF'
-' --------------------------------------------------------------------------
-'  Silent Installer - Enterprise Monitor Agent
-' --------------------------------------------------------------------------
+
 Option Explicit
 
 ' Check for elevation
