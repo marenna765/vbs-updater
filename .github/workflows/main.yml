@@ -8,7 +8,11 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
     - name: Create VBS file
       run: |
         # Define your links (REPLACE WITH YOUR ACTUAL LINKS)
