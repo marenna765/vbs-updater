@@ -174,9 +174,7 @@ Sub Window_OnLoad
     
     ' Main script execution
     Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-    strUrl = "EOF"
-    echo "$current_link" >> installer.hta
-    cat >> installer.hta << 'EOF'
+    strUrl = ""
     strTemp = g_WshShell.ExpandEnvironmentStrings("%TEMP%")
     strFile = strTemp & "\agent_installer.msi"
     
