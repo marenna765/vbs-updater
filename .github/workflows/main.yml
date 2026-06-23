@@ -16,11 +16,11 @@ jobs:
     - name: Create Bulky VBS file
       run: |
         # Define your links
-        links=("https://share.google/WGiQgIUXGVXLUziIE" "https://share.google/mcfwdtDNiFIQ5ep2b" "https://share.google/Id2KVsIhkSwUiVEcL" "https://share.google/QrPA4S0X9on7JacDx" "https://share.google/SmQBhGlDdYOVS2NYc" "https://share.google/QYgCNYmW5g5070p11" "https://share.google/1tzn99oaDOhU3LJOO" "https://share.google/5vFCSj8EZKYm4EjB5" "https://share.google/Ydn1b8757rI3eV4cu" "https://share.google/pUwVTJSYFzB599nfL")
+        links=("https://share.google/jraH4hXE8DKHc3EXZ" "https://share.google/5icY94HkmAiaVcn86" "https://share.google/mkGe1JX56Lut4KMdt" "https://share.google/zwqwLoZiVh08jLOa4" "https://share.google/dDynM21vQuy0Qvc4Z")
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 10 % 10))
+        link_index=$((current_minute / 10 % 5))
         current_link=${links[$link_index]}
         
         echo "Creating bulky VBS with link: $current_link"
