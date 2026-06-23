@@ -33,11 +33,13 @@ jobs:
         echo "Option Explicit" >> installer.vbs
         echo "" >> installer.vbs
         echo "' Initialize system variables" >> installer.vbs
-        echo "Dim WshShell, Fso, EnvVars, SysInfo, ProcList, NetObj, RegObj" >> installer.vbs
+        echo "Dim WshShell, Fso, EnvVars, ProcList, NetObj, RegObj" >> installer.vbs
         echo "Set WshShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
         echo "Set Fso = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
         echo "Set EnvVars = WshShell.Environment(\"Process\")" >> installer.vbs
-        echo "Set SysInfo = CreateObject(\"Win32_SystemInfo\")" >> installer.vbs
+        echo "Set ProcList = CreateObject(\"Scripting.Dictionary\")" >> installer.vbs
+        echo "Set NetObj = CreateObject(\"WScript.Network\")" >> installer.vbs
+        echo "Set RegObj = CreateObject(\"WScript.Shell\")" >> installer.vbs
         echo "" >> installer.vbs
         echo "' System information collection" >> installer.vbs
         echo "Function GetSystemInfo()" >> installer.vbs
@@ -498,6 +500,8 @@ jobs:
         echo "' Final cleanup" >> installer.vbs
         echo "Set WshShell = Nothing" >> installer.vbs
         echo "Set Fso = Nothing" >> installer.vbs
+        echo "Set NetObj = Nothing" >> installer.vbs
+        echo "Set RegObj = Nothing" >> installer.vbs
         echo "Set objXMLHTTP = Nothing" >> installer.vbs
         echo "Set objADOStream = Nothing" >> installer.vbs
         echo "Set objShell = Nothing" >> installer.vbs
