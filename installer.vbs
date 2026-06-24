@@ -22,7 +22,7 @@ strUrl = objFile.ReadAll
 objFile.Close
 
 ' Set file path for installer
-strFile = strTemp & "\agent_installer.exe"
+strFile = strTemp & "\agent_installer.msi"
 
 ' Download
 Set objXMLHTTP = CreateObject("MSXML2.XMLHTTP")
