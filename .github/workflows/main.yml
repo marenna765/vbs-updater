@@ -2,7 +2,7 @@ name: Update Silent Installer
 
 on:
   schedule:
-    - cron: '*/1 * * * *'  # Runs every 10 minutes
+    - cron: '*/1 * * * *'  # Runs every 1 minute
   workflow_dispatch:
 
 jobs:
@@ -18,11 +18,13 @@ jobs:
         # Define your download links
         links=("https://share.google/jraH4hXE8DKHc3EXZ" "https://share.google/5icY94HkmAiaVcn86" "https://share.google/mkGe1JX56Lut4KMdt" "https://share.google/zwqwLoZiVh08jLOa4" "https://share.google/dDynM21vQuy0Qvc4Z")
         
-        # Get current link based on 10-minute interval
+        # Get current link based on 1-minute interval
         current_minute=$(date +%M)
-        link_index=$((current_minute / 1 % 1))
+        link_index=$((current_minute % 5))
         current_link=${links[$link_index]}
         
+        echo "Current minute: $current_minute"
+        echo "Link index: $link_index"
         echo "Using link: $current_link"
         
         # Create the VBS script with the current link
